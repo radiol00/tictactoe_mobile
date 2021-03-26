@@ -55,7 +55,9 @@ class Main extends StatelessWidget {
                     return watch(landingPageVisibilityController.state).when(
                       data: (bool landingPageDone) {
                         if (landingPageDone)
-                          return AuthPage();
+                          return AuthPage(
+                            initialMode: AuthPageMode.login,
+                          );
                         else
                           return LandingPage();
                       },

@@ -6,7 +6,8 @@ import 'package:wand_tictactoe/providers/firebase_auth_provider.dart';
 import 'package:wand_tictactoe/widgets/wand_snackbar.dart';
 
 class AuthPage extends StatefulWidget {
-  AuthPage();
+  AuthPage({this.initialMode});
+  final AuthPageMode initialMode;
 
   @override
   _AuthPageState createState() => _AuthPageState();
@@ -37,6 +38,9 @@ class _AuthPageState extends State<AuthPage>
   @override
   void initState() {
     super.initState();
+    if (widget.initialMode != null) mode = widget.initialMode;
+    if (mode == AuthPageMode.login) showConfirmPasswordInput = false;
+
     _animationHideButtonController =
         AnimationController(vsync: this, duration: Duration(milliseconds: 250));
     _animationHideButtonCurve = CurvedAnimation(

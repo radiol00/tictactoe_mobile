@@ -80,7 +80,9 @@ class _LandingPageState extends State<LandingPage> {
             curve: Curves.easeInOut,
             // freeze: true,
           ),
-          AuthPage(),
+          AuthPage(
+            initialMode: AuthPageMode.signin,
+          ),
         ],
       ),
     );
