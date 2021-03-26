@@ -21,6 +21,60 @@ void main() async {
 }
 
 class Main extends StatelessWidget {
+  Widget _watchLandingPageVisiblity(
+      T Function<T>(ProviderBase<Object, T>) watch, BuildContext context) {
+    return watch(landingPageVisibilityController.state).when(
+      data: (bool landingPageDone) {
+        if (landingPageDone)
+          return AuthPage(
+            initialMode: AuthPageMode.login,
+          );
+        else
+          return LandingPage();
+      },
+      loading: () {
+        return Center(
+          child: CircularProgressIndicator(),
+        );
+      },
+      error: (error, stackTrace) {
+        return Center(
+          child: Text("Error"),
+        );
+      },
+    );
+  }
+
+  Widget _watchAuthState(
+      T Function<T>(ProviderBase<Object, T>) watch, BuildContext context) {
+    return watch(firebaseAuthController.state).when(
+      data: (TTTUser user) {
+        if (user == null) {
+          return _watchLandingPageVisiblity(watch, context);
+        } else {
+          return Center(
+            child: ElevatedButton(
+              onPressed: () {
+                context.read(firebaseAuthController).logout();
+              },
+              child: Text("logout"),
+            ),
+          );
+        }
+      },
+      loading: () {
+        return Center(
+          child: CircularProgressIndicator(),
+        );
+      },
+      error: (error, stackTrace) {
+        return Center(
+          child: Text("Error"),
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -48,50 +102,8 @@ class Main extends StatelessWidget {
         ),
         home: Scaffold(
           body: Consumer(
-            builder: (context, watch, _) {
-              return watch(firebaseAuthController.state).when(
-                data: (TTTUser user) {
-                  if (user == null) {
-                    return watch(landingPageVisibilityController.state).when(
-                      data: (bool landingPageDone) {
-                        if (landingPageDone)
-                          return AuthPage(
-                            initialMode: AuthPageMode.login,
-                          );
-                        else
-                          return LandingPage();
-                      },
-                      loading: () {
-                        return Center(
-                          child: CircularProgressIndicator(),
-                        );
-                      },
-                      error: (error, stackTrace) {
-                        return Center(
-                          child: Text("Error"),
-                        );
-                      },
-                    );
-                  } else {
-                    return Center(
-                        child: ElevatedButton(
-                            onPressed: () {
-                              context.read(firebaseAuthController).logout();
-                            },
-                            child: Text("logout")));
-                  }
-                },
-                loading: () {
-                  return Center(
-                    child: CircularProgressIndicator(),
-                  );
-                },
-                error: (error, stackTrace) {
-                  return Center(
-                    child: Text("Error"),
-                  );
-                },
-              );
+            builder: (context, watch, child) {
+              return _watchAuthState(watch, context);
             },
           ),
         ));
