@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_keyboard_visibility/flutter_keyboard_visibility.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:wand_tictactoe/providers/landing_page_visibility_provider.dart';
@@ -8,7 +9,9 @@ import 'package:wand_tictactoe/views/landing_page.dart';
 void main() {
   Widget makeWidgetTestable(Widget child) {
     return MaterialApp(
-      home: child,
+      home: KeyboardVisibilityProvider(
+        child: child,
+      ),
     );
   }
 
@@ -47,6 +50,7 @@ void main() {
 
     expect(createFinder, findsOneWidget);
     await tester.tap(createFinder);
+    await tester.pump(Duration(seconds: 3));
     await tester.pumpAndSettle();
 
     expect(signInFinder, findsOneWidget);
