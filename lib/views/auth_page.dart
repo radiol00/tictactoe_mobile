@@ -58,6 +58,13 @@ class _AuthPageState extends State<AuthPage>
         if (mounted) {
           setState(() => loadingRequest = false);
         }
+      } else if (mode == AuthPageMode.login) {
+        await context
+            .read(firebaseAuthController)
+            .loginWithEmailAndPasswd(email, passwd);
+        if (mounted) {
+          setState(() => loadingRequest = false);
+        }
       }
     } catch (e) {
       if (e is FirebaseAuthException) {

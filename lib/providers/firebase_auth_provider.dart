@@ -14,26 +14,27 @@ class FirebaseAuthNotifier extends StateNotifier<AsyncValue<TTTUser>> {
   WANDFirebaseConnection _connection;
 
   void _init() async {
-    if (_connection.auth.currentUser == null) {
-      state = AsyncValue.data(null);
-      return;
-    }
-    TTTUser user = TTTUser()..firebaseUserObject = _connection.auth.currentUser;
-    // print(_connection.store.getUsername(user.firebaseUserObject.uid));
-    state = AsyncValue.data(user);
-    return;
+    _connection.auth.authStateChanges()
+      ..listen((user) {
+        if (user == null) {
+          state = AsyncValue.data(null);
+        } else {
+          state = AsyncValue.data(TTTUser()..firebaseUserObject = user);
+        }
+      });
   }
 
-  Future<dynamic> registerWithEmailAndPasswd(
-      String email, String passwd) async {
-    UserCredential userCred = await _connection.auth
+  Future<void> registerWithEmailAndPasswd(String email, String passwd) async {
+    await _connection.auth
         .createUserWithEmailAndPassword(email: email, password: passwd);
-    TTTUser user = TTTUser()..firebaseUserObject = userCred.user;
-    state = AsyncValue.data(user);
+  }
+
+  Future<void> loginWithEmailAndPasswd(String email, String passwd) async {
+    await _connection.auth
+        .signInWithEmailAndPassword(email: email, password: passwd);
   }
 
   void logout() async {
-    await _connection.auth.signOut();
-    state = AsyncValue.data(null);
+    _connection.auth.signOut();
   }
 }
