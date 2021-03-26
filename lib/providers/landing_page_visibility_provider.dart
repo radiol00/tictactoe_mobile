@@ -18,8 +18,8 @@ class LandingPageVisibilityNotifier extends StateNotifier<AsyncValue<bool>> {
 
   void init() async {
     await prefs.ensureInitialized();
-    state = AsyncValue.data(false);
-    // state = AsyncValue.data(prefs.getLandingPageSeen());
+    // state = AsyncValue.data(false);
+    state = AsyncValue.data(prefs.getLandingPageSeen());
   }
 
   void seen() {

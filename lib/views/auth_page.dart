@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_keyboard_visibility/flutter_keyboard_visibility.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -58,9 +59,21 @@ class _AuthPageState extends State<AuthPage>
         }
       }
     } catch (e) {
-      print(e);
-      if (mounted) {
-        setState(() => loadingRequest = false);
+      if (e is FirebaseAuthException) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text("${e?.message}"),
+            backgroundColor: Theme.of(context).primaryColor,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.only(
+                  topLeft: Radius.circular(15.0),
+                  topRight: Radius.circular(15.0)),
+            ),
+          ),
+        );
+        if (mounted) {
+          setState(() => loadingRequest = false);
+        }
       }
     }
   }

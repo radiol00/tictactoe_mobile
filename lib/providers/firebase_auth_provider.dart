@@ -1,4 +1,5 @@
 // CONTROLLER
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:wand_tictactoe/models/ttt_user.dart';
 import 'package:wand_tictactoe/services/wand_firebase_connection.dart';
@@ -25,11 +26,14 @@ class FirebaseAuthNotifier extends StateNotifier<AsyncValue<TTTUser>> {
 
   Future<dynamic> registerWithEmailAndPasswd(
       String email, String passwd) async {
-    await _connection.auth
+    UserCredential userCred = await _connection.auth
         .createUserWithEmailAndPassword(email: email, password: passwd);
+    TTTUser user = TTTUser()..firebaseUserObject = userCred.user;
+    state = AsyncValue.data(user);
   }
 
   void logout() async {
     await _connection.auth.signOut();
+    state = AsyncValue.data(null);
   }
 }

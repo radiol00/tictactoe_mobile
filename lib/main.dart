@@ -71,10 +71,12 @@ class Main extends StatelessWidget {
                       },
                     );
                   } else {
-                    context.read(firebaseAuthController).logout();
                     return Center(
-                      child: Text("USER!!!"),
-                    );
+                        child: ElevatedButton(
+                            onPressed: () {
+                              context.read(firebaseAuthController).logout();
+                            },
+                            child: Text("logout")));
                   }
                 },
                 loading: () {
