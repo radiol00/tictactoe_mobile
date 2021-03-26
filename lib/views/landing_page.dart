@@ -78,7 +78,7 @@ class _LandingPageState extends State<LandingPage> {
             nextFlex: 2,
             dotsFlex: 2,
             curve: Curves.easeInOut,
-            // freeze: true,
+            freeze: true,
           ),
           AuthPage(
             initialMode: AuthPageMode.signin,
