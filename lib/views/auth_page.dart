@@ -199,6 +199,7 @@ class _AuthPageState extends State<AuthPage>
                     text: "E-mail",
                     icon: Icons.alternate_email_rounded,
                     validator: (value) {
+                      value = value.trim();
                       if (value == "") return "Field required!";
                       if (!emailRegexp.hasMatch(value))
                         return "Wrong email format!";
@@ -211,6 +212,8 @@ class _AuthPageState extends State<AuthPage>
                     text: "Password",
                     icon: Icons.lock_rounded,
                     validator: (value) {
+                      value = value.trim();
+
                       if (value == "") return "Field required!";
                       if (value.length < 6 && mode == AuthPageMode.signin)
                         return "Should be at least 6 characters long!";
@@ -229,6 +232,8 @@ class _AuthPageState extends State<AuthPage>
                       text: "Confirm password",
                       icon: Icons.lock_outline_rounded,
                       validator: (value) {
+                        value = value.trim();
+
                         if (mode == AuthPageMode.signin) {
                           if (value == "") return "Field required!";
                           if (value != passwd && passwd != "")
@@ -309,6 +314,12 @@ class _AuthPageState extends State<AuthPage>
         ),
       ),
     );
+  }
+
+  @override
+  void dispose() {
+    _animationHideButtonController.dispose();
+    super.dispose();
   }
 }
 

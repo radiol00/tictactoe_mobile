@@ -7,6 +7,7 @@ import 'package:wand_tictactoe/providers/firebase_auth_provider.dart';
 import 'package:wand_tictactoe/providers/landing_page_visibility_provider.dart';
 import 'package:wand_tictactoe/views/auth_page.dart';
 import 'package:wand_tictactoe/views/landing_page.dart';
+import 'package:wand_tictactoe/views/main_menu_page.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -20,7 +21,15 @@ void main() async {
   );
 }
 
-class Main extends StatelessWidget {
+class Main extends StatefulWidget {
+  @override
+  _MainState createState() => _MainState();
+}
+
+class _MainState extends State<Main> {
+  bool wasAlreadyLoggedIn = true;
+  bool shouldUseAnimatedSwitcher = false;
+
   Widget _watchLandingPageVisiblity(
       T Function<T>(ProviderBase<Object, T>) watch, BuildContext context) {
     return watch(landingPageVisibilityController.state).when(
@@ -49,16 +58,13 @@ class Main extends StatelessWidget {
       T Function<T>(ProviderBase<Object, T>) watch, BuildContext context) {
     return watch(firebaseAuthController.state).when(
       data: (TTTUser user) {
+        shouldUseAnimatedSwitcher = true;
         if (user == null) {
+          wasAlreadyLoggedIn = false;
           return _watchLandingPageVisiblity(watch, context);
         } else {
-          return Center(
-            child: ElevatedButton(
-              onPressed: () {
-                context.read(firebaseAuthController).logout();
-              },
-              child: Text("logout"),
-            ),
+          return MainMenuPage(
+            runInitAnimations: !wasAlreadyLoggedIn,
           );
         }
       },
@@ -102,8 +108,26 @@ class Main extends StatelessWidget {
         ),
         home: Scaffold(
           body: Consumer(
-            builder: (context, watch, child) {
-              return _watchAuthState(watch, context);
+            builder: (context, watch, _) {
+              if (shouldUseAnimatedSwitcher) {
+                return AnimatedSwitcher(
+                  switchInCurve: Curves.easeOut,
+                  switchOutCurve: Curves.easeIn,
+                  transitionBuilder: (child, animation) {
+                    return ScaleTransition(
+                      child: FadeTransition(
+                        child: child,
+                        opacity: animation,
+                      ),
+                      scale: animation,
+                    );
+                  },
+                  duration: Duration(seconds: 1),
+                  child: _watchAuthState(watch, context),
+                );
+              } else {
+                return _watchAuthState(watch, context);
+              }
             },
           ),
         ));
