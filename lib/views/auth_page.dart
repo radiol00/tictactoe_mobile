@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_keyboard_visibility/flutter_keyboard_visibility.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:wand_tictactoe/providers/firebase_auth_provider.dart';
+import 'package:wand_tictactoe/widgets/wand_snackbar.dart';
 
 class AuthPage extends StatefulWidget {
   AuthPage();
@@ -60,17 +61,8 @@ class _AuthPageState extends State<AuthPage>
       }
     } catch (e) {
       if (e is FirebaseAuthException) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text("${e?.message}"),
-            backgroundColor: Theme.of(context).primaryColor,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.only(
-                  topLeft: Radius.circular(15.0),
-                  topRight: Radius.circular(15.0)),
-            ),
-          ),
-        );
+        ScaffoldMessenger.of(context)
+            .showSnackBar(buildSnackBar(context, "${e.message}"));
         if (mounted) {
           setState(() => loadingRequest = false);
         }
