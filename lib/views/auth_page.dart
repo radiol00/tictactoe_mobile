@@ -291,13 +291,9 @@ class _AuthPageState extends State<AuthPage>
                 if (!KeyboardVisibilityProvider.isKeyboardVisible(context))
                   Column(
                     children: [
-                      FittedBox(
-                        child: Placeholder(
-                          fallbackHeight: 200,
-                        ),
-                      ),
+                      FittedBox(child: Image.asset("assets/title.png")),
                       SizedBox(
-                        height: 30.0,
+                        height: 10.0,
                       ),
                     ],
                   ),

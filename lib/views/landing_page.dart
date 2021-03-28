@@ -36,20 +36,20 @@ class _LandingPageState extends State<LandingPage> {
               PageViewModel(
                 title: "Dominate your enemies!",
                 body: "",
-                image: Placeholder(),
-                decoration: PageDecoration(imageFlex: 2),
+                image: Image.asset("assets/domination.gif"),
+                decoration: PageDecoration(imageFlex: 4),
               ),
               PageViewModel(
                 title: "Have great fun with your friends!",
                 body: "",
-                image: Placeholder(),
-                decoration: PageDecoration(imageFlex: 2),
+                image: Image.asset("assets/friends.gif"),
+                decoration: PageDecoration(imageFlex: 4),
               ),
               PageViewModel(
-                image: Placeholder(),
+                image: Image.asset("assets/ready.gif"),
                 title: "Are you ready?",
                 body: "",
-                decoration: PageDecoration(imageFlex: 2),
+                decoration: PageDecoration(imageFlex: 4),
               ),
             ],
             dotsDecorator: DotsDecorator(
@@ -78,7 +78,6 @@ class _LandingPageState extends State<LandingPage> {
             nextFlex: 2,
             dotsFlex: 2,
             curve: Curves.easeInOut,
-            freeze: true,
           ),
           AuthPage(
             initialMode: AuthPageMode.signin,
