@@ -1,5 +1,4 @@
 // CONTROLLER
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:wand_tictactoe/models/ttt_user.dart';
 import 'package:wand_tictactoe/services/wand_firebase_connection.dart';
@@ -9,11 +8,11 @@ final firebaseAuthController = StateNotifierProvider.autoDispose(
 
 class FirebaseAuthNotifier extends StateNotifier<AsyncValue<TTTUser>> {
   FirebaseAuthNotifier(this._connection) : super(AsyncValue.loading()) {
-    _init();
+    init();
   }
   WANDFirebaseConnection _connection;
 
-  void _init() async {
+  void init() async {
     _connection.auth.authStateChanges()
       ..listen((user) {
         if (user == null) {

@@ -266,6 +266,7 @@ class _AuthPageState extends State<AuthPage>
       children: [
         Expanded(
           child: TextFormField(
+            key: Key("${text}_input"),
             onSaved: onSaved,
             decoration: InputDecoration(
               hintText: text,
