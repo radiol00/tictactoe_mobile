@@ -209,6 +209,7 @@ class _AuthPageState extends State<AuthPage>
                     },
                   ),
                   _buildTextFormField(
+                    obscureText: true,
                     text: "Password",
                     icon: Icons.lock_rounded,
                     validator: (value) {
@@ -229,6 +230,7 @@ class _AuthPageState extends State<AuthPage>
                         ? CrossFadeState.showFirst
                         : CrossFadeState.showSecond,
                     firstChild: _buildTextFormField(
+                      obscureText: true,
                       text: "Confirm password",
                       icon: Icons.lock_outline_rounded,
                       validator: (value) {
@@ -257,15 +259,18 @@ class _AuthPageState extends State<AuthPage>
     );
   }
 
-  Widget _buildTextFormField(
-      {String text = "",
-      IconData icon,
-      Function(String) validator,
-      Function onSaved}) {
+  Widget _buildTextFormField({
+    String text = "",
+    IconData icon,
+    Function(String) validator,
+    Function onSaved,
+    bool obscureText = false,
+  }) {
     return Row(
       children: [
         Expanded(
           child: TextFormField(
+            obscureText: obscureText,
             key: Key("${text}_input"),
             onSaved: onSaved,
             decoration: InputDecoration(
