@@ -37,19 +37,34 @@ class _LandingPageState extends State<LandingPage> {
                 title: "Dominate your enemies!",
                 body: "",
                 image: Image.asset("assets/domination.gif"),
-                decoration: PageDecoration(imageFlex: 4),
+                decoration: PageDecoration(
+                  imageFlex: MediaQuery.of(context).orientation ==
+                          Orientation.landscape
+                      ? 2
+                      : 4,
+                ),
               ),
               PageViewModel(
                 title: "Have great fun with your friends!",
                 body: "",
                 image: Image.asset("assets/friends.gif"),
-                decoration: PageDecoration(imageFlex: 4),
+                decoration: PageDecoration(
+                  imageFlex: MediaQuery.of(context).orientation ==
+                          Orientation.landscape
+                      ? 2
+                      : 4,
+                ),
               ),
               PageViewModel(
                 image: Image.asset("assets/ready.gif"),
                 title: "Are you ready?",
                 body: "",
-                decoration: PageDecoration(imageFlex: 4),
+                decoration: PageDecoration(
+                  imageFlex: MediaQuery.of(context).orientation ==
+                          Orientation.landscape
+                      ? 2
+                      : 4,
+                ),
               ),
             ],
             dotsDecorator: DotsDecorator(
