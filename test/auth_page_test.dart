@@ -121,8 +121,11 @@ void main() {
           ),
           overrides: [
             firebaseAuthController.overrideWithProvider(
-                StateNotifierProvider.autoDispose(
-                    (ref) => MockFirebaseAuthNotifier()))
+              StateNotifierProvider.autoDispose(
+                (ref) => MockFirebaseAuthNotifier(
+                    MockFirebaseAuthNotifierMode.noInteraction),
+              ),
+            )
           ],
         ),
       );
@@ -172,20 +175,85 @@ void main() {
       await tester.tap(signInFinder);
       await tester.pump();
       expect(fieldRequiredError, findsNothing);
+    });
 
+    testWidgets('[Password length]', (WidgetTester tester) async {
+      await tester.pumpWidget(
+        ProviderScope(
+          child: makeWidgetTestable(
+            AuthPage(
+              initialMode: AuthPageMode.signin,
+            ),
+          ),
+          overrides: [
+            firebaseAuthController.overrideWithProvider(
+              StateNotifierProvider.autoDispose(
+                (ref) => MockFirebaseAuthNotifier(
+                    MockFirebaseAuthNotifierMode.noInteraction),
+              ),
+            )
+          ],
+        ),
+      );
+      final logInFinder = find.widgetWithText(ElevatedButton, "Log in");
+      final signInFinder = find.widgetWithText(ElevatedButton, "Sign in");
+      final toSignInButtonFinder =
+          find.widgetWithText(TextButton, "I need an account");
+      final toLogInButtonFinder =
+          find.widgetWithText(TextButton, "I already have an account");
+      final emailInputFinder = find.byKey(Key("E-mail_input"));
+      final passwordInputFinder = find.byKey(Key("Password_input"));
+      final confirmPasswordInputFinder =
+          find.byKey(Key("Confirm password_input"));
+      final passwdLengthRequiredError =
+          find.text("Should be at least 6 characters long!");
+
+      // EXPECT SIGNIN PAGE
+      expect(logInFinder, findsNothing);
+      expect(signInFinder, findsOneWidget);
+      expect(emailInputFinder, findsOneWidget);
+      expect(passwordInputFinder, findsOneWidget);
+      expect(confirmPasswordInputFinder, findsOneWidget);
+      expect(toSignInButtonFinder, findsNothing);
+      expect(toLogInButtonFinder, findsOneWidget);
+
+      // No errors
+      expect(passwdLengthRequiredError, findsNothing);
+
+      await tester.enterText(passwordInputFinder, "12345");
+      await tester.tap(signInFinder);
       await tester.pump();
+
+      expect(passwdLengthRequiredError, findsOneWidget);
+
+      await tester.enterText(passwordInputFinder, "123456");
+      await tester.tap(signInFinder);
+      await tester.pump();
+
+      expect(passwdLengthRequiredError, findsNothing);
     });
   });
 }
 
-class MockFirebaseAuthNotifier extends FirebaseAuthNotifier {
-  MockFirebaseAuthNotifier() : super(WANDFirebaseConnection());
+enum MockFirebaseAuthNotifierMode { noInteraction }
 
+class MockFirebaseAuthNotifier extends FirebaseAuthNotifier {
+  MockFirebaseAuthNotifier(MockFirebaseAuthNotifierMode mode)
+      : super(WANDFirebaseConnection()) {
+    _mode = mode;
+  }
+
+  MockFirebaseAuthNotifierMode _mode;
   @override
   void init() {}
 
   @override
   Future<void> registerWithEmailAndPasswd(String email, String passwd) async {
-    return;
+    if (_mode == MockFirebaseAuthNotifierMode.noInteraction) return;
+  }
+
+  @override
+  Future<void> loginWithEmailAndPasswd(String email, String passwd) async {
+    if (_mode == MockFirebaseAuthNotifierMode.noInteraction) return;
   }
 }
