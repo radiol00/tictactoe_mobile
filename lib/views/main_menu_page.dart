@@ -3,7 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:wand_tictactoe/providers/firebase_auth_provider.dart';
 
 class MainMenuPage extends StatefulWidget {
-  MainMenuPage({this.runInitAnimations});
+  MainMenuPage({this.key, this.runInitAnimations}) : super(key: key);
+  final Key key;
   final bool runInitAnimations;
   @override
   _MainMenuPageState createState() => _MainMenuPageState();

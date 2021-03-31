@@ -64,6 +64,7 @@ class _MainState extends State<Main> {
           return _watchLandingPageVisiblity(watch, context);
         } else {
           return MainMenuPage(
+            key: Key("MainMenuPageKey"),
             runInitAnimations: !wasAlreadyLoggedIn,
           );
         }

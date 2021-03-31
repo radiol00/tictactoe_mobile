@@ -1,8 +1,10 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_keyboard_visibility/flutter_keyboard_visibility.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:wand_tictactoe/main.dart';
+import 'package:wand_tictactoe/models/ttt_user.dart';
 import 'package:wand_tictactoe/providers/firebase_auth_provider.dart';
 import 'package:wand_tictactoe/providers/landing_page_visibility_provider.dart';
 import 'package:wand_tictactoe/views/auth_page.dart';
@@ -32,6 +34,8 @@ void main() {
   final passwdLengthRequiredError =
       find.text("Should be at least 6 characters long!");
   final passwdConfirmRequiredError = find.text("Passwords don't match!");
+  final mainMenuPageFinder = find.byKey(Key("MainMenuPageKey"));
+  final snackBarFinder = find.byKey(Key("SnackBarKey"));
 
   testWidgets('Auth Page: changing forms (Log in -> Sign in)',
       (WidgetTester tester) async {
@@ -388,7 +392,7 @@ void main() {
     });
   });
 
-  testWidgets("AuthPage Login", (WidgetTester tester) async {
+  testWidgets("AuthPage Successful Login", (WidgetTester tester) async {
     await tester.pumpWidget(
       ProviderScope(
         child: makeWidgetTestable(
@@ -397,7 +401,7 @@ void main() {
         overrides: [
           firebaseAuthController.overrideWithValue(
             MockFirebaseAuthNotifier(
-              MockFirebaseAuthNotifierMode.noInteraction,
+              MockFirebaseAuthNotifierMode.successfulInteraction,
             ),
           ),
           landingPageVisibilityController.overrideWithValue(
@@ -424,10 +428,164 @@ void main() {
     await tester.tap(logInFinder);
 
     await tester.pumpAndSettle();
+
+    expect(mainMenuPageFinder, findsOneWidget);
+    expect(snackBarFinder, findsNothing);
+  });
+
+  testWidgets("AuthPage Failed Login", (WidgetTester tester) async {
+    await tester.pumpWidget(
+      ProviderScope(
+        child: makeWidgetTestable(
+          Main(),
+        ),
+        overrides: [
+          firebaseAuthController.overrideWithValue(
+            MockFirebaseAuthNotifier(
+              MockFirebaseAuthNotifierMode.failedInteraction,
+            ),
+          ),
+          landingPageVisibilityController.overrideWithValue(
+            MockLandingPageVisibilityNotifier(done: true),
+          ),
+        ],
+      ),
+    );
+
+    // EXPECT LOGIN PAGE
+    expect(logInFinder, findsOneWidget);
+    expect(signInFinder, findsNothing);
+    expect(emailInputFinder, findsOneWidget);
+    expect(passwordInputFinder, findsOneWidget);
+    expect(confirmPasswordInputFinder,
+        findsOneWidget); // Confirm Password input is rendered with CrossFade effect on Sign-in Form expansion
+    // so it's there even if it's not visible
+    expect(toSignInButtonFinder, findsOneWidget);
+    expect(toLogInButtonFinder, findsNothing);
+
+    await tester.enterText(emailInputFinder, "test@example.com");
+    await tester.enterText(passwordInputFinder, "testtest");
+
+    await tester.tap(logInFinder);
+    await tester.pump();
+
+    expect(mainMenuPageFinder, findsNothing);
+    expect(snackBarFinder, findsOneWidget);
+  });
+
+  testWidgets("AuthPage Successful Sign in", (WidgetTester tester) async {
+    await tester.pumpWidget(
+      ProviderScope(
+        child: makeWidgetTestable(
+          Main(),
+        ),
+        overrides: [
+          firebaseAuthController.overrideWithValue(
+            MockFirebaseAuthNotifier(
+              MockFirebaseAuthNotifierMode.successfulInteraction,
+            ),
+          ),
+          landingPageVisibilityController.overrideWithValue(
+            MockLandingPageVisibilityNotifier(done: true),
+          ),
+        ],
+      ),
+    );
+
+    // EXPECT LOGIN PAGE
+    expect(logInFinder, findsOneWidget);
+    expect(signInFinder, findsNothing);
+    expect(emailInputFinder, findsOneWidget);
+    expect(passwordInputFinder, findsOneWidget);
+    expect(confirmPasswordInputFinder,
+        findsOneWidget); // Confirm Password input is rendered with CrossFade effect on Sign-in Form expansion
+    // so it's there even if it's not visible
+    expect(toSignInButtonFinder, findsOneWidget);
+    expect(toLogInButtonFinder, findsNothing);
+
+    await tester.tap(toSignInButtonFinder);
+    await tester.pumpAndSettle();
+
+    // EXPECT SIGNIN PAGE
+    expect(logInFinder, findsNothing);
+    expect(signInFinder, findsOneWidget);
+    expect(emailInputFinder, findsOneWidget);
+    expect(passwordInputFinder, findsOneWidget);
+    expect(confirmPasswordInputFinder, findsOneWidget);
+    expect(toSignInButtonFinder, findsNothing);
+    expect(toLogInButtonFinder, findsOneWidget);
+
+    await tester.enterText(emailInputFinder, "test@example.com");
+    await tester.enterText(passwordInputFinder, "testtest");
+    await tester.enterText(confirmPasswordInputFinder, "testtest");
+
+    await tester.tap(signInFinder);
+
+    await tester.pumpAndSettle();
+
+    expect(mainMenuPageFinder, findsOneWidget);
+    expect(snackBarFinder, findsNothing);
+  });
+
+  testWidgets("AuthPage Failed Sign in", (WidgetTester tester) async {
+    await tester.pumpWidget(
+      ProviderScope(
+        child: makeWidgetTestable(
+          Main(),
+        ),
+        overrides: [
+          firebaseAuthController.overrideWithValue(
+            MockFirebaseAuthNotifier(
+              MockFirebaseAuthNotifierMode.failedInteraction,
+            ),
+          ),
+          landingPageVisibilityController.overrideWithValue(
+            MockLandingPageVisibilityNotifier(done: true),
+          ),
+        ],
+      ),
+    );
+
+    // EXPECT LOGIN PAGE
+    expect(logInFinder, findsOneWidget);
+    expect(signInFinder, findsNothing);
+    expect(emailInputFinder, findsOneWidget);
+    expect(passwordInputFinder, findsOneWidget);
+    expect(confirmPasswordInputFinder,
+        findsOneWidget); // Confirm Password input is rendered with CrossFade effect on Sign-in Form expansion
+    // so it's there even if it's not visible
+    expect(toSignInButtonFinder, findsOneWidget);
+    expect(toLogInButtonFinder, findsNothing);
+
+    await tester.tap(toSignInButtonFinder);
+    await tester.pumpAndSettle();
+
+    // EXPECT SIGNIN PAGE
+    expect(logInFinder, findsNothing);
+    expect(signInFinder, findsOneWidget);
+    expect(emailInputFinder, findsOneWidget);
+    expect(passwordInputFinder, findsOneWidget);
+    expect(confirmPasswordInputFinder, findsOneWidget);
+    expect(toSignInButtonFinder, findsNothing);
+    expect(toLogInButtonFinder, findsOneWidget);
+
+    await tester.enterText(emailInputFinder, "test@example.com");
+    await tester.enterText(passwordInputFinder, "testtest");
+    await tester.enterText(confirmPasswordInputFinder, "testtest");
+
+    await tester.tap(signInFinder);
+    await tester.pump();
+
+    expect(mainMenuPageFinder, findsNothing);
+    expect(snackBarFinder, findsOneWidget);
   });
 }
 
-enum MockFirebaseAuthNotifierMode { noInteraction, successLogin }
+enum MockFirebaseAuthNotifierMode {
+  noInteraction,
+  successfulInteraction,
+  failedInteraction
+}
 
 class MockFirebaseAuthNotifier extends FirebaseAuthNotifier {
   MockFirebaseAuthNotifier(MockFirebaseAuthNotifierMode mode) : super(null) {
@@ -443,11 +601,29 @@ class MockFirebaseAuthNotifier extends FirebaseAuthNotifier {
 
   @override
   Future<void> registerWithEmailAndPasswd(String email, String passwd) async {
-    if (_mode == MockFirebaseAuthNotifierMode.noInteraction) return;
+    switch (_mode) {
+      case MockFirebaseAuthNotifierMode.noInteraction:
+        return;
+      case MockFirebaseAuthNotifierMode.successfulInteraction:
+        state = AsyncValue.data(TTTUser());
+        return;
+      case MockFirebaseAuthNotifierMode.failedInteraction:
+        throw new FirebaseAuthException(code: "test", message: "test message");
+        return;
+    }
   }
 
   @override
   Future<void> loginWithEmailAndPasswd(String email, String passwd) async {
-    if (_mode == MockFirebaseAuthNotifierMode.noInteraction) return;
+    switch (_mode) {
+      case MockFirebaseAuthNotifierMode.noInteraction:
+        return;
+      case MockFirebaseAuthNotifierMode.successfulInteraction:
+        state = AsyncValue.data(TTTUser());
+        return;
+      case MockFirebaseAuthNotifierMode.failedInteraction:
+        throw new FirebaseAuthException(code: "test", message: "test message");
+        return;
+    }
   }
 }

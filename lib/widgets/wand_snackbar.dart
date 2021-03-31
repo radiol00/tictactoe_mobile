@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 SnackBar buildSnackBar(BuildContext context, String text) {
   return SnackBar(
+    key: Key("SnackBarKey"),
     content: Text("$text"),
     backgroundColor: Theme.of(context).primaryColor,
     shape: RoundedRectangleBorder(
