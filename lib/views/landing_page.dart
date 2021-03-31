@@ -11,10 +11,12 @@ class LandingPage extends StatefulWidget {
 
 class _LandingPageState extends State<LandingPage> {
   PageController _controller;
+  Function landingPageSeen;
   @override
   void initState() {
     super.initState();
     _controller = PageController(initialPage: 0);
+    landingPageSeen = context.read(landingPageVisibilityController).seen;
   }
 
   @override
@@ -81,7 +83,7 @@ class _LandingPageState extends State<LandingPage> {
             ),
             showSkipButton: false,
             onDone: () {
-              context.read(landingPageVisibilityController).seen();
+              landingPageSeen();
               _controller.animateToPage(1,
                   duration: Duration(seconds: 1), curve: Curves.easeInOut);
             },
