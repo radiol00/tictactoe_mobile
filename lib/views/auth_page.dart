@@ -239,7 +239,7 @@ class _AuthPageState extends State<AuthPage>
                         if (mode == AuthPageMode.signin) {
                           if (value == "") return "Field required!";
                           if (value != passwd && passwd != "")
-                            return "Passwords dont match!";
+                            return "Passwords don't match!";
                         } else {
                           return null;
                         }
