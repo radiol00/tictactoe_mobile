@@ -431,6 +431,8 @@ void main() {
 
     expect(mainMenuPageFinder, findsOneWidget);
     expect(snackBarFinder, findsNothing);
+
+    await tester.pump(Duration(seconds: 2));
   });
 
   testWidgets("AuthPage Failed Login", (WidgetTester tester) async {
@@ -525,6 +527,8 @@ void main() {
 
     expect(mainMenuPageFinder, findsOneWidget);
     expect(snackBarFinder, findsNothing);
+
+    await tester.pump(Duration(seconds: 2));
   });
 
   testWidgets("AuthPage Failed Sign in", (WidgetTester tester) async {

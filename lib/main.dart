@@ -65,7 +65,7 @@ class _MainState extends State<Main> {
         } else {
           return MainMenuPage(
             key: Key("MainMenuPageKey"),
-            runInitAnimations: !wasAlreadyLoggedIn,
+            delayInitAnimations: !wasAlreadyLoggedIn,
           );
         }
       },
@@ -93,16 +93,33 @@ class _MainState extends State<Main> {
             style: ButtonStyle(
               backgroundColor: MaterialStateProperty.all<Color>(Colors.white),
               foregroundColor: MaterialStateProperty.all<Color>(Colors.black),
+              overlayColor: MaterialStateProperty.all<Color>(
+                  Colors.black.withOpacity(0.1)),
             ),
           ),
           elevatedButtonTheme: ElevatedButtonThemeData(
             style: ButtonStyle(
               backgroundColor: MaterialStateProperty.all<Color>(Colors.black),
               foregroundColor: MaterialStateProperty.all<Color>(Colors.white),
+              overlayColor: MaterialStateProperty.all<Color>(
+                  Colors.white.withOpacity(0.1)),
               shape: MaterialStateProperty.all(
                 ContinuousRectangleBorder(
                   borderRadius: BorderRadius.circular(50.0),
                 ),
+              ),
+            ),
+          ),
+          outlinedButtonTheme: OutlinedButtonThemeData(
+            style: ButtonStyle(
+              overlayColor: MaterialStateProperty.all<Color>(
+                  Colors.black.withOpacity(0.1)),
+              backgroundColor:
+                  MaterialStateProperty.all<Color>(Colors.transparent),
+              foregroundColor: MaterialStateProperty.all<Color>(Colors.black),
+              side: MaterialStateProperty.all<BorderSide>(
+                BorderSide(
+                    width: 2, color: Colors.black, style: BorderStyle.solid),
               ),
             ),
           ),

@@ -287,31 +287,32 @@ class _AuthPageState extends State<AuthPage>
   @override
   Widget build(BuildContext context) {
     return SafeArea(
-      child: Padding(
-        padding: EdgeInsets.all(16.0),
-        child: Center(
-          child: SingleChildScrollView(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                if (!KeyboardVisibilityProvider.isKeyboardVisible(context))
-                  Column(
-                    children: [
-                      Image.asset("assets/title.png"),
-                      SizedBox(
-                        height: 10.0,
-                      ),
-                    ],
-                  ),
-                Row(
+      child: Center(
+        child: SingleChildScrollView(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              if (!KeyboardVisibilityProvider.isKeyboardVisible(context))
+                Column(
                   children: [
-                    Expanded(
-                      child: _buildLoginWidget(),
+                    Image.asset("assets/title.png"),
+                    SizedBox(
+                      height: 10.0,
                     ),
                   ],
-                )
-              ],
-            ),
+                ),
+              Row(
+                children: [
+                  Expanded(
+                    child: Padding(
+                      padding: const EdgeInsets.only(
+                          left: 16.0, right: 16.0, bottom: 16.0),
+                      child: _buildLoginWidget(),
+                    ),
+                  ),
+                ],
+              )
+            ],
           ),
         ),
       ),

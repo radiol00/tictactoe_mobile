@@ -8,19 +8,27 @@ final firebaseAuthController =
     StateNotifierProvider.autoDispose<FirebaseAuthNotifier>(
         (ref) => FirebaseAuthNotifier(ref.read(wandFirebaseConnection)));
 
+final localTTTUserProvider =
+    Provider((ref) => ref.read(firebaseAuthController).localUser);
+
 class FirebaseAuthNotifier extends StateNotifier<AsyncValue<TTTUser>> {
   FirebaseAuthNotifier(this._connection) : super(AsyncValue.loading()) {
     init();
   }
   WANDFirebaseConnection _connection;
 
+  TTTUser localUser;
+
   void init() async {
     _connection.auth.authStateChanges()
       ..listen((user) {
         if (user == null) {
+          localUser = null;
           state = AsyncValue.data(null);
         } else {
-          state = AsyncValue.data(TTTUser()..firebaseUserObject = user);
+          TTTUser tttuser = TTTUser()..firebaseUserObject = user;
+          state = AsyncValue.data(tttuser);
+          localUser = tttuser;
         }
       });
   }
