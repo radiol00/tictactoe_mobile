@@ -2,10 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_keyboard_visibility/flutter_keyboard_visibility.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:wand_tictactoe/services/wand_firebase_connection.dart';
+import 'package:wand_tictactoe/main.dart';
+import 'package:wand_tictactoe/providers/firebase_auth_provider.dart';
+import 'package:wand_tictactoe/providers/landing_page_visibility_provider.dart';
+import 'package:wand_tictactoe/views/auth_page.dart';
 
-import '../lib/providers/firebase_auth_provider.dart';
-import '../lib/views/auth_page.dart';
+import 'landing_page_test.dart';
 
 void main() {
   Widget makeWidgetTestable(Widget child) {
@@ -115,12 +117,11 @@ void main() {
             ),
           ),
           overrides: [
-            firebaseAuthController.overrideWithProvider(
-              StateNotifierProvider.autoDispose(
-                (ref) => MockFirebaseAuthNotifier(
-                    MockFirebaseAuthNotifierMode.noInteraction),
+            firebaseAuthController.overrideWithValue(
+              MockFirebaseAuthNotifier(
+                MockFirebaseAuthNotifierMode.noInteraction,
               ),
-            )
+            ),
           ],
         ),
       );
@@ -170,12 +171,11 @@ void main() {
             ),
           ),
           overrides: [
-            firebaseAuthController.overrideWithProvider(
-              StateNotifierProvider.autoDispose(
-                (ref) => MockFirebaseAuthNotifier(
-                    MockFirebaseAuthNotifierMode.noInteraction),
+            firebaseAuthController.overrideWithValue(
+              MockFirebaseAuthNotifier(
+                MockFirebaseAuthNotifierMode.noInteraction,
               ),
-            )
+            ),
           ],
         ),
       );
@@ -214,12 +214,11 @@ void main() {
             ),
           ),
           overrides: [
-            firebaseAuthController.overrideWithProvider(
-              StateNotifierProvider.autoDispose(
-                (ref) => MockFirebaseAuthNotifier(
-                    MockFirebaseAuthNotifierMode.noInteraction),
+            firebaseAuthController.overrideWithValue(
+              MockFirebaseAuthNotifier(
+                MockFirebaseAuthNotifierMode.noInteraction,
               ),
-            )
+            ),
           ],
         ),
       );
@@ -259,12 +258,11 @@ void main() {
             ),
           ),
           overrides: [
-            firebaseAuthController.overrideWithProvider(
-              StateNotifierProvider.autoDispose(
-                (ref) => MockFirebaseAuthNotifier(
-                    MockFirebaseAuthNotifierMode.noInteraction),
+            firebaseAuthController.overrideWithValue(
+              MockFirebaseAuthNotifier(
+                MockFirebaseAuthNotifierMode.noInteraction,
               ),
-            )
+            ),
           ],
         ),
       );
@@ -303,12 +301,11 @@ void main() {
             ),
           ),
           overrides: [
-            firebaseAuthController.overrideWithProvider(
-              StateNotifierProvider.autoDispose(
-                (ref) => MockFirebaseAuthNotifier(
-                    MockFirebaseAuthNotifierMode.noInteraction),
+            firebaseAuthController.overrideWithValue(
+              MockFirebaseAuthNotifier(
+                MockFirebaseAuthNotifierMode.noInteraction,
               ),
-            )
+            ),
           ],
         ),
       );
@@ -354,12 +351,11 @@ void main() {
             ),
           ),
           overrides: [
-            firebaseAuthController.overrideWithProvider(
-              StateNotifierProvider.autoDispose(
-                (ref) => MockFirebaseAuthNotifier(
-                    MockFirebaseAuthNotifierMode.noInteraction),
+            firebaseAuthController.overrideWithValue(
+              MockFirebaseAuthNotifier(
+                MockFirebaseAuthNotifierMode.noInteraction,
               ),
-            )
+            ),
           ],
         ),
       );
@@ -391,19 +387,59 @@ void main() {
       expect(wrongEmailFormatError, findsNothing);
     });
   });
+
+  testWidgets("AuthPage Login", (WidgetTester tester) async {
+    await tester.pumpWidget(
+      ProviderScope(
+        child: makeWidgetTestable(
+          Main(),
+        ),
+        overrides: [
+          firebaseAuthController.overrideWithValue(
+            MockFirebaseAuthNotifier(
+              MockFirebaseAuthNotifierMode.noInteraction,
+            ),
+          ),
+          landingPageVisibilityController.overrideWithValue(
+            MockLandingPageVisibilityNotifier(done: true),
+          ),
+        ],
+      ),
+    );
+
+    // EXPECT LOGIN PAGE
+    expect(logInFinder, findsOneWidget);
+    expect(signInFinder, findsNothing);
+    expect(emailInputFinder, findsOneWidget);
+    expect(passwordInputFinder, findsOneWidget);
+    expect(confirmPasswordInputFinder,
+        findsOneWidget); // Confirm Password input is rendered with CrossFade effect on Sign-in Form expansion
+    // so it's there even if it's not visible
+    expect(toSignInButtonFinder, findsOneWidget);
+    expect(toLogInButtonFinder, findsNothing);
+
+    await tester.enterText(emailInputFinder, "test@example.com");
+    await tester.enterText(passwordInputFinder, "testtest");
+
+    await tester.tap(logInFinder);
+
+    await tester.pumpAndSettle();
+  });
 }
 
-enum MockFirebaseAuthNotifierMode { noInteraction }
+enum MockFirebaseAuthNotifierMode { noInteraction, successLogin }
 
 class MockFirebaseAuthNotifier extends FirebaseAuthNotifier {
-  MockFirebaseAuthNotifier(MockFirebaseAuthNotifierMode mode)
-      : super(WANDFirebaseConnection()) {
+  MockFirebaseAuthNotifier(MockFirebaseAuthNotifierMode mode) : super(null) {
     _mode = mode;
   }
 
   MockFirebaseAuthNotifierMode _mode;
+
   @override
-  void init() {}
+  void init() async {
+    state = AsyncValue.data(null);
+  }
 
   @override
   Future<void> registerWithEmailAndPasswd(String email, String passwd) async {

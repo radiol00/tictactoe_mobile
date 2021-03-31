@@ -24,10 +24,8 @@ void main() {
           LandingPage(),
         ),
         overrides: [
-          landingPageVisibilityController.overrideWithProvider(
-            StateNotifierProvider.autoDispose(
-              (ref) => MockLandingPageVisibilityNotifier(),
-            ),
+          landingPageVisibilityController.overrideWithValue(
+            MockLandingPageVisibilityNotifier(done: false),
           ),
         ],
       ),
@@ -58,11 +56,14 @@ void main() {
 }
 
 class MockLandingPageVisibilityNotifier extends LandingPageVisibilityNotifier {
-  MockLandingPageVisibilityNotifier() : super(WANDSharedPreferences());
+  MockLandingPageVisibilityNotifier({this.done})
+      : super(WANDSharedPreferences());
+
+  bool done;
 
   @override
   void init() {
-    state = AsyncValue.data(false);
+    state = AsyncValue.data(done);
     return;
   }
 

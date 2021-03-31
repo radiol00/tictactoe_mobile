@@ -1,10 +1,10 @@
-// CONTROLLER
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:wand_tictactoe/models/ttt_user.dart';
 import 'package:wand_tictactoe/services/wand_firebase_connection.dart';
 
-final firebaseAuthController = StateNotifierProvider.autoDispose(
-    (ref) => FirebaseAuthNotifier(ref.read(wandFirebaseConnection)));
+final firebaseAuthController =
+    StateNotifierProvider.autoDispose<FirebaseAuthNotifier>(
+        (ref) => FirebaseAuthNotifier(ref.read(wandFirebaseConnection)));
 
 class FirebaseAuthNotifier extends StateNotifier<AsyncValue<TTTUser>> {
   FirebaseAuthNotifier(this._connection) : super(AsyncValue.loading()) {
