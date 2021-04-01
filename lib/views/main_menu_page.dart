@@ -1,9 +1,12 @@
 import 'dart:async';
 
+import 'package:animations/animations.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_keyboard_visibility/flutter_keyboard_visibility.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:wand_tictactoe/providers/firebase_auth_provider.dart';
+import 'package:wand_tictactoe/views/settings_page.dart';
 
 class MainMenuPage extends StatefulWidget {
   MainMenuPage({this.key, this.delayInitAnimations = false}) : super(key: key);
@@ -181,29 +184,42 @@ class _MainMenuPageState extends State<MainMenuPage>
                         ],
                       ),
                     if (menuItemsVisible)
-                      Padding(
-                        padding: const EdgeInsets.only(bottom: 8.0, right: 8.0),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.end,
-                          children: [
-                            Transform.translate(
-                              offset:
-                                  Offset(0, _animationMenuButtons.value * 100),
-                              child: IconButton(
-                                splashRadius:
-                                    Material.defaultSplashRadius - 10.0,
-                                icon: Icon(Icons.settings),
-                                iconSize: 35,
-                                onPressed: () {
-                                  if (!onGoingAnimation) {
-                                    logout();
-                                  }
-                                },
-                              ),
+                      OpenContainer(
+                        transitionDuration: Duration(milliseconds: 500),
+                        tappable: false,
+                        closedBuilder: (context, action) {
+                          return Padding(
+                            padding:
+                                const EdgeInsets.only(bottom: 8.0, right: 8.0),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.end,
+                              children: [
+                                Transform.translate(
+                                  offset: Offset(
+                                      0, _animationMenuButtons.value * 100),
+                                  child: IconButton(
+                                    splashRadius:
+                                        Material.defaultSplashRadius - 10.0,
+                                    icon: Icon(Icons.settings),
+                                    iconSize: 35,
+                                    onPressed: () {
+                                      if (!onGoingAnimation) {
+                                        // logout();
+                                        action();
+                                      }
+                                    },
+                                  ),
+                                ),
+                              ],
                             ),
-                          ],
-                        ),
-                      )
+                          );
+                        },
+                        openBuilder: (context, action) {
+                          return SettingsPage(
+                            popPage: action,
+                          );
+                        },
+                      ),
                   ],
                 ),
               ),
