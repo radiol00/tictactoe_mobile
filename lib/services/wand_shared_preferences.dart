@@ -37,7 +37,6 @@ class WANDSharedPreferences {
   Future<void> setLandingPageSeen() async {
     if (isUninitialized)
       throw new Exception("Shared Preferences not initialized!");
-    // TODO: Uncomment line below when Landing Page development is complete
     await sp.setBool(landingPageSeenKey, true);
     return;
   }
