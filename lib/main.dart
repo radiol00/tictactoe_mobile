@@ -8,6 +8,7 @@ import 'package:wand_tictactoe/providers/landing_page_visibility_provider.dart';
 import 'package:wand_tictactoe/views/auth_page.dart';
 import 'package:wand_tictactoe/views/landing_page.dart';
 import 'package:wand_tictactoe/views/main_menu_page.dart';
+import 'package:wand_tictactoe/widgets/wand_progress_indicator.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -43,7 +44,10 @@ class _MainState extends State<Main> {
       },
       loading: () {
         return Center(
-          child: CircularProgressIndicator(),
+          child: WANDProgressIndicator(
+            type: WANDProgressIndicatorType.fullscreen,
+            size: 100,
+          ),
         );
       },
       error: (error, stackTrace) {
@@ -71,7 +75,10 @@ class _MainState extends State<Main> {
       },
       loading: () {
         return Center(
-          child: CircularProgressIndicator(),
+          child: WANDProgressIndicator(
+            type: WANDProgressIndicatorType.fullscreen,
+            size: 100,
+          ),
         );
       },
       error: (error, stackTrace) {

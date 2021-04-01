@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_keyboard_visibility/flutter_keyboard_visibility.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:wand_tictactoe/providers/firebase_auth_provider.dart';
+import 'package:wand_tictactoe/widgets/wand_progress_indicator.dart';
 import 'package:wand_tictactoe/widgets/wand_snackbar.dart';
 
 class AuthPage extends StatefulWidget {
@@ -98,7 +99,10 @@ class _AuthPageState extends State<AuthPage>
             secondChild: Container(
               height: 100.0,
               child: Center(
-                child: CircularProgressIndicator(),
+                child: WANDProgressIndicator(
+                  type: WANDProgressIndicatorType.minimal,
+                  size: 50,
+                ),
               ),
             ),
             firstChild: Column(
@@ -293,14 +297,7 @@ class _AuthPageState extends State<AuthPage>
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               if (!KeyboardVisibilityProvider.isKeyboardVisible(context))
-                Column(
-                  children: [
-                    Image.asset("assets/title.png"),
-                    SizedBox(
-                      height: 10.0,
-                    ),
-                  ],
-                ),
+                Image.asset("assets/title.png"),
               Row(
                 children: [
                   Expanded(
