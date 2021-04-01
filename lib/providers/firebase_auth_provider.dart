@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:wand_tictactoe/models/ttt_user.dart';
 import 'package:wand_tictactoe/services/wand_firebase_connection.dart';
@@ -5,9 +6,6 @@ import 'package:wand_tictactoe/services/wand_firebase_connection.dart';
 final firebaseAuthController =
     StateNotifierProvider.autoDispose<FirebaseAuthNotifier>(
         (ref) => FirebaseAuthNotifier(ref.read(wandFirebaseConnection)));
-
-final localTTTUserProvider =
-    Provider((ref) => ref.read(firebaseAuthController).localUser);
 
 class FirebaseAuthNotifier extends StateNotifier<AsyncValue<TTTUser>> {
   FirebaseAuthNotifier(this._connection) : super(AsyncValue.loading()) {
@@ -25,8 +23,8 @@ class FirebaseAuthNotifier extends StateNotifier<AsyncValue<TTTUser>> {
           state = AsyncValue.data(null);
         } else {
           TTTUser tttuser = TTTUser()..firebaseUserObject = user;
-          state = AsyncValue.data(tttuser);
           localUser = tttuser;
+          state = AsyncValue.data(tttuser);
         }
       });
   }
@@ -47,5 +45,10 @@ class FirebaseAuthNotifier extends StateNotifier<AsyncValue<TTTUser>> {
 
   void logout() async {
     _connection.auth.signOut();
+  }
+
+  void changePasswd() async {
+    await _connection.auth
+        .sendPasswordResetEmail(email: localUser.firebaseUserObject.email);
   }
 }

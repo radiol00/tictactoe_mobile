@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:wand_tictactoe/providers/firebase_auth_provider.dart';
 
 class SettingsPage extends StatefulWidget {
   SettingsPage({@required this.popPage}) : assert(popPage != null);
-  Function popPage;
+  final Function popPage;
   @override
   _SettingsPageState createState() => _SettingsPageState();
 }
@@ -22,6 +24,23 @@ class _SettingsPageState extends State<SettingsPage> {
                   "Settings",
                   textScaleFactor: 2.0,
                 ),
+              ),
+              Column(
+                children: [
+                  // ElevatedButton(
+                  //   onPressed: () async {
+                  //     context.read(firebaseAuthController).changePasswd();
+                  //   },
+                  //   child: Text("Change passwd"),
+                  // ),
+                  ElevatedButton(
+                    onPressed: () async {
+                      context.read(firebaseAuthController).logout();
+                      widget.popPage();
+                    },
+                    child: Text("Logout"),
+                  ),
+                ],
               ),
               Row(
                 mainAxisAlignment: MainAxisAlignment.end,

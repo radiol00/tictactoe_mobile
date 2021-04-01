@@ -34,7 +34,11 @@ class _MainMenuPageState extends State<MainMenuPage>
   void initState() {
     super.initState();
     logout = context.read(firebaseAuthController).logout;
-    username = context.read(localTTTUserProvider)?.firebaseUserObject?.email;
+    username = context
+        .read(firebaseAuthController)
+        ?.localUser
+        ?.firebaseUserObject
+        ?.email;
     _animationController = AnimationController(
       vsync: this,
       duration: Duration(seconds: 1),

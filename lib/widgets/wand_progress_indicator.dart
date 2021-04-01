@@ -51,21 +51,26 @@ class WANDProgressIndicator extends StatelessWidget {
         return Stack(
           alignment: Alignment.center,
           children: [
-            SpinKitRipple(
-              duration: Duration(milliseconds: 2000),
-              color: Colors.black,
-              size: size,
+            Center(
+              child: SpinKitRipple(
+                borderWidth: 3,
+                duration: Duration(milliseconds: 2000),
+                color: Colors.black,
+                size: size,
+              ),
             ),
-            SpinKitRotatingPlain(
-              duration: Duration(milliseconds: 2000),
-              size: size / 2,
-              itemBuilder: (context, index) {
-                return Container(
-                  child: Center(
-                    child: Icon(Icons.close),
-                  ),
-                );
-              },
+            Center(
+              child: SpinKitRotatingPlain(
+                duration: Duration(milliseconds: 2000),
+                size: size,
+                itemBuilder: (context, index) {
+                  return Container(
+                    child: Center(
+                      child: Icon(Icons.close),
+                    ),
+                  );
+                },
+              ),
             ),
           ],
         );
