@@ -5,6 +5,7 @@ import 'package:animations/animations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_keyboard_visibility/flutter_keyboard_visibility.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:wand_tictactoe/models/ttt_user.dart';
 import 'package:wand_tictactoe/providers/firebase_auth_provider.dart';
 import 'package:wand_tictactoe/providers/protip_provider.dart';
 import 'package:wand_tictactoe/views/credits_page.dart';
@@ -22,8 +23,6 @@ class _MainMenuPageState extends State<MainMenuPage>
     with TickerProviderStateMixin {
   Image logoImage = Image.asset(
     "assets/credits.png",
-    // height: 50,
-    // cacheHeight: 50,
   );
 
   @override
@@ -301,61 +300,66 @@ class _MainMenuPageState extends State<MainMenuPage>
   Widget build(BuildContext context) {
     menuButtonId = 0;
 
-    return SafeArea(
-      child: Column(
-        children: [
-          Image.asset(
-            "assets/game_title.png",
-            height: MediaQuery.of(context).size.height * 0.3,
-          ),
-          // Placeholder(
-          //   fallbackHeight: MediaQuery.of(context).size.height * 0.3,
-          // ),
-          Opacity(
-            opacity: -(_animationProfileButton.value - 1),
-            child: SizedBox(
-              height: 20,
-              child: SingleChildScrollView(
-                controller: _scrollController,
-                scrollDirection: Axis.horizontal,
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 24.0),
-                  child: Row(
-                    children: [
-                      Text(
-                        "Protip: ${protip?.text}",
-                        style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            color: Colors.black.withOpacity(0.4)),
-                      ),
-                    ],
+    return ProviderListener(
+      provider: firebaseAuthController.state,
+      onChange: (context, AsyncValue<TTTUser> value) {
+        value.whenData((value) {
+          print("essa");
+        });
+      },
+      child: SafeArea(
+        child: Column(
+          children: [
+            Image.asset(
+              "assets/game_title.png",
+              height: MediaQuery.of(context).size.height * 0.3,
+            ),
+            Opacity(
+              opacity: -(_animationProfileButton.value - 1),
+              child: SizedBox(
+                height: 20,
+                child: SingleChildScrollView(
+                  controller: _scrollController,
+                  scrollDirection: Axis.horizontal,
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 24.0),
+                    child: Row(
+                      children: [
+                        Text(
+                          "Protip: ${protip?.text}",
+                          style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              color: Colors.black.withOpacity(0.4)),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ),
             ),
-          ),
-          Flexible(
-            flex: 1,
-            child: Stack(
-              children: [
-                _buildBackground(),
-                if (menuItemsVisible) _buildProfileButton(),
-                if (menuItemsVisible)
-                  Align(
-                    alignment: Alignment.center,
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        _buildMenuButton("Find match"),
-                        _buildMenuButton("Fight with friend"),
-                      ],
+            Flexible(
+              flex: 1,
+              child: Stack(
+                children: [
+                  _buildBackground(),
+                  if (menuItemsVisible) _buildProfileButton(),
+                  if (menuItemsVisible)
+                    Align(
+                      alignment: Alignment.center,
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          _buildMenuButton("Find match"),
+                          _buildMenuButton("Fight with friend"),
+                        ],
+                      ),
                     ),
-                  ),
-                if (menuItemsVisible) _buildBottomButtons(),
-              ],
+                  if (menuItemsVisible) _buildBottomButtons(),
+                ],
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
