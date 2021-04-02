@@ -20,6 +20,18 @@ class MainMenuPage extends StatefulWidget {
 
 class _MainMenuPageState extends State<MainMenuPage>
     with TickerProviderStateMixin {
+  Image logoImage = Image.asset(
+    "assets/credits.png",
+    // height: 50,
+    // cacheHeight: 50,
+  );
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    precacheImage(logoImage.image, context);
+  }
+
   ScrollController _scrollController;
   AnimationController _animationController;
   Animation _animationMenuButtons;
@@ -206,116 +218,145 @@ class _MainMenuPageState extends State<MainMenuPage>
           ),
           Flexible(
             flex: 1,
-            child: Container(
-              child: Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    if (menuItemsVisible)
-                      Transform.translate(
-                        offset: Offset(
-                            _animationProfileButton.value *
-                                MediaQuery.of(context).size.width,
-                            0),
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            children: [
-                              TextButton(
-                                onPressed: () {},
-                                child: Row(
-                                  children: [
-                                    Icon(
-                                      Icons.person,
-                                      size: 25.0,
-                                    ),
-                                    Text(
-                                      "$username",
-                                      style: TextStyle(
-                                        letterSpacing: 0.5,
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
+            child: Stack(
+              children: [
+                Opacity(
+                  opacity: -(_animationProfileButton.value - 1),
+                  child: Container(
+                    decoration: BoxDecoration(
+                      image: DecorationImage(
+                        fit: BoxFit.fitHeight,
+                        image: AssetImage("assets/mm_background.png"),
                       ),
-                    if (menuItemsVisible)
-                      Column(
-                        children: [
-                          _buildMenuButton("Find match"),
-                          _buildMenuButton("Fight with friend"),
-                        ],
-                      ),
-                    if (menuItemsVisible)
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Opacity(
-                            opacity: -(_animationProfileButton.value - 1),
+                    ),
+                  ),
+                ),
+                Container(
+                  // color: Colors.red,
+                  // decoration: BoxDecoration(
+                  //   image: DecorationImage(
+                  //     fit: BoxFit.fitHeight,
+                  //     image: AssetImage("assets/mm_background.png"),
+                  //   ),
+                  // ),
+                  child: Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        if (menuItemsVisible)
+                          Transform.translate(
+                            offset: Offset(
+                                _animationProfileButton.value *
+                                    MediaQuery.of(context).size.width,
+                                0),
                             child: Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: InkWell(
-                                customBorder: ContinuousRectangleBorder(
-                                  borderRadius: BorderRadius.circular(25),
-                                ),
-                                splashColor: Colors.black.withOpacity(0.1),
-                                onTap: () {
-                                  Navigator.of(context).push(MaterialPageRoute(
-                                    builder: (context) => CreditsPage(),
-                                  ));
-                                },
-                                child: Hero(
-                                  tag: "Credits_WAND_logo",
-                                  child: Image.asset(
-                                    "assets/credits.png",
-                                    height: 50,
-                                    cacheHeight: 50,
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 8.0),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                children: [
+                                  TextButton(
+                                    style: ButtonStyle(
+                                        backgroundColor:
+                                            MaterialStateProperty.all<Color>(
+                                                Colors.transparent)),
+                                    onPressed: () {},
+                                    child: Row(
+                                      children: [
+                                        Icon(
+                                          Icons.person,
+                                          size: 25.0,
+                                        ),
+                                        Text(
+                                          "$username",
+                                          style: TextStyle(
+                                            letterSpacing: 0.5,
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
                                   ),
-                                ),
+                                ],
                               ),
                             ),
                           ),
-                          OpenContainer(
-                            closedShape: CircleBorder(),
-                            closedElevation: 0,
-                            openElevation: 0,
-                            tappable: false,
-                            closedBuilder: (context, openContainer) {
-                              return Transform.translate(
-                                offset: Offset(
-                                    0, _animationMenuButtons.value * 100),
+                        if (menuItemsVisible)
+                          Column(
+                            children: [
+                              _buildMenuButton("Find match"),
+                              _buildMenuButton("Fight with friend"),
+                            ],
+                          ),
+                        if (menuItemsVisible)
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Opacity(
+                                opacity: -(_animationProfileButton.value - 1),
                                 child: Padding(
                                   padding: const EdgeInsets.all(8.0),
-                                  child: IconButton(
-                                    splashRadius:
-                                        Material.defaultSplashRadius - 10.0,
-                                    icon: Icon(Icons.settings),
-                                    iconSize: 35,
-                                    onPressed: () {
-                                      if (!onGoingAnimation) {
-                                        openContainer();
-                                      }
+                                  child: InkWell(
+                                    customBorder: ContinuousRectangleBorder(
+                                      borderRadius: BorderRadius.circular(25),
+                                    ),
+                                    splashColor: Colors.black.withOpacity(0.1),
+                                    onTap: () {
+                                      Navigator.of(context)
+                                          .push(MaterialPageRoute(
+                                        builder: (context) => CreditsPage(
+                                          precachedLogo: logoImage,
+                                        ),
+                                      ));
                                     },
+                                    child: SizedBox(
+                                      height: 50,
+                                      child: Hero(
+                                        tag: "Credits_WAND_logo",
+                                        child: logoImage,
+                                      ),
+                                    ),
                                   ),
                                 ),
-                              );
-                            },
-                            openBuilder: (context, closeContainer) {
-                              return SettingsPage(
-                                popPage: closeContainer,
-                              );
-                            },
+                              ),
+                              OpenContainer(
+                                closedShape: CircleBorder(),
+                                closedElevation: 0,
+                                openElevation: 0,
+                                tappable: false,
+                                closedBuilder: (context, openContainer) {
+                                  return Transform.translate(
+                                    offset: Offset(
+                                        0, _animationMenuButtons.value * 100),
+                                    child: Padding(
+                                      padding: const EdgeInsets.all(8.0),
+                                      child: IconButton(
+                                        splashRadius:
+                                            Material.defaultSplashRadius - 10.0,
+                                        icon: Icon(Icons.settings),
+                                        iconSize: 35,
+                                        onPressed: () {
+                                          if (!onGoingAnimation) {
+                                            openContainer();
+                                          }
+                                        },
+                                      ),
+                                    ),
+                                  );
+                                },
+                                openBuilder: (context, closeContainer) {
+                                  return SettingsPage(
+                                    popPage: closeContainer,
+                                  );
+                                },
+                              ),
+                            ],
                           ),
-                        ],
-                      ),
-                  ],
+                      ],
+                    ),
+                  ),
                 ),
-              ),
+              ],
             ),
           ),
         ],

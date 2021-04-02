@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 
 class CreditsPage extends StatefulWidget {
+  CreditsPage({@required this.precachedLogo});
+  final Image precachedLogo;
   @override
   _CreditsPageState createState() => _CreditsPageState();
 }
@@ -8,6 +10,15 @@ class CreditsPage extends StatefulWidget {
 class _CreditsPageState extends State<CreditsPage> {
   @override
   Widget build(BuildContext context) {
+    // logo = Image.asset(
+    //   "assets/credits.png",
+    //   width: MediaQuery.of(context).orientation == Orientation.portrait
+    //       ? MediaQuery.of(context).size.width / 2
+    //       : null,
+    //   height: MediaQuery.of(context).orientation == Orientation.landscape
+    //       ? MediaQuery.of(context).size.height / 6
+    //       : null,
+    // );
     return Scaffold(
       body: SafeArea(
         child: Column(
@@ -18,19 +29,18 @@ class _CreditsPageState extends State<CreditsPage> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
-                  Hero(
-                    tag: "Credits_WAND_logo",
-                    child: Image.asset(
-                      "assets/credits.png",
-                      width: MediaQuery.of(context).orientation ==
-                              Orientation.portrait
-                          ? MediaQuery.of(context).size.width / 2
-                          : null,
-                      height: MediaQuery.of(context).orientation ==
-                              Orientation.landscape
-                          ? MediaQuery.of(context).size.height / 6
-                          : null,
-                      // cacheHeight: 50,
+                  SizedBox(
+                    width: MediaQuery.of(context).orientation ==
+                            Orientation.portrait
+                        ? MediaQuery.of(context).size.width / 2
+                        : null,
+                    height: MediaQuery.of(context).orientation ==
+                            Orientation.landscape
+                        ? MediaQuery.of(context).size.height / 6
+                        : null,
+                    child: Hero(
+                      tag: "Credits_WAND_logo",
+                      child: widget.precachedLogo,
                     ),
                   ),
                   Text(

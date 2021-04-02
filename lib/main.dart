@@ -121,10 +121,10 @@ class _MainState extends State<Main> {
           ),
           outlinedButtonTheme: OutlinedButtonThemeData(
             style: ButtonStyle(
+              elevation: MaterialStateProperty.all<double>(10.0),
               overlayColor: MaterialStateProperty.all<Color>(
                   Colors.black.withOpacity(0.1)),
-              backgroundColor:
-                  MaterialStateProperty.all<Color>(Colors.transparent),
+              backgroundColor: MaterialStateProperty.all<Color>(Colors.white),
               foregroundColor: MaterialStateProperty.all<Color>(Colors.black),
               side: MaterialStateProperty.all<BorderSide>(
                 BorderSide(

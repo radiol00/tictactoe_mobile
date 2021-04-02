@@ -11,7 +11,6 @@ class SettingsPage extends StatefulWidget {
 
 class _SettingsPageState extends State<SettingsPage> {
   void Function() logout;
-
   @override
   void initState() {
     super.initState();
