@@ -164,7 +164,7 @@ class _MainMenuPageState extends State<MainMenuPage>
               style: ButtonStyle(
                 shape: MaterialStateProperty.all<OutlinedBorder>(
                   ContinuousRectangleBorder(
-                    borderRadius: BorderRadius.circular(25),
+                    borderRadius: BorderRadius.circular(15),
                   ),
                 ),
               ),
@@ -175,6 +175,124 @@ class _MainMenuPageState extends State<MainMenuPage>
             ),
           ),
         ),
+      ),
+    );
+  }
+
+  Widget _buildBackground() {
+    return Opacity(
+      opacity: -(_animationProfileButton.value - 1),
+      child: Container(
+        decoration: BoxDecoration(
+          image: DecorationImage(
+            fit: BoxFit.fitHeight,
+            image: AssetImage("assets/mm_background.png"),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildProfileButton() {
+    return Transform.translate(
+      offset: Offset(
+          _animationProfileButton.value * MediaQuery.of(context).size.width, 0),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 8.0),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: [
+            TextButton(
+              style: ButtonStyle(
+                  backgroundColor:
+                      MaterialStateProperty.all<Color>(Colors.transparent)),
+              onPressed: () {},
+              child: Row(
+                children: [
+                  Icon(
+                    Icons.person,
+                    size: 25.0,
+                  ),
+                  Text(
+                    "$username",
+                    style: TextStyle(
+                      letterSpacing: 0.5,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildBottomButtons() {
+    return Positioned(
+      bottom: 0,
+      left: 0,
+      right: 0,
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Opacity(
+            opacity: -(_animationProfileButton.value - 1),
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: InkWell(
+                customBorder: ContinuousRectangleBorder(
+                  borderRadius: BorderRadius.circular(25),
+                ),
+                splashColor: Colors.black.withOpacity(0.1),
+                onTap: () {
+                  Navigator.of(context).push(MaterialPageRoute(
+                    builder: (context) => CreditsPage(
+                      precachedLogo: logoImage,
+                    ),
+                  ));
+                },
+                child: SizedBox(
+                  height: 50,
+                  child: Hero(
+                    tag: "Credits_WAND_logo",
+                    child: logoImage,
+                  ),
+                ),
+              ),
+            ),
+          ),
+          OpenContainer(
+            closedShape: CircleBorder(),
+            closedElevation: 0,
+            openElevation: 0,
+            tappable: false,
+            closedBuilder: (context, openContainer) {
+              return Transform.translate(
+                offset: Offset(0, _animationMenuButtons.value * 100),
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: IconButton(
+                    splashRadius: Material.defaultSplashRadius - 10.0,
+                    icon: Icon(Icons.settings),
+                    iconSize: 35,
+                    onPressed: () {
+                      if (!onGoingAnimation) {
+                        openContainer();
+                      }
+                    },
+                  ),
+                ),
+              );
+            },
+            openBuilder: (context, closeContainer) {
+              return SettingsPage(
+                popPage: closeContainer,
+              );
+            },
+          ),
+        ],
       ),
     );
   }
@@ -220,142 +338,20 @@ class _MainMenuPageState extends State<MainMenuPage>
             flex: 1,
             child: Stack(
               children: [
-                Opacity(
-                  opacity: -(_animationProfileButton.value - 1),
-                  child: Container(
-                    decoration: BoxDecoration(
-                      image: DecorationImage(
-                        fit: BoxFit.fitHeight,
-                        image: AssetImage("assets/mm_background.png"),
-                      ),
-                    ),
-                  ),
-                ),
-                Container(
-                  // color: Colors.red,
-                  // decoration: BoxDecoration(
-                  //   image: DecorationImage(
-                  //     fit: BoxFit.fitHeight,
-                  //     image: AssetImage("assets/mm_background.png"),
-                  //   ),
-                  // ),
-                  child: Center(
+                _buildBackground(),
+                if (menuItemsVisible) _buildProfileButton(),
+                if (menuItemsVisible)
+                  Align(
+                    alignment: Alignment.center,
                     child: Column(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        if (menuItemsVisible)
-                          Transform.translate(
-                            offset: Offset(
-                                _animationProfileButton.value *
-                                    MediaQuery.of(context).size.width,
-                                0),
-                            child: Padding(
-                              padding:
-                                  const EdgeInsets.symmetric(horizontal: 8.0),
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.start,
-                                children: [
-                                  TextButton(
-                                    style: ButtonStyle(
-                                        backgroundColor:
-                                            MaterialStateProperty.all<Color>(
-                                                Colors.transparent)),
-                                    onPressed: () {},
-                                    child: Row(
-                                      children: [
-                                        Icon(
-                                          Icons.person,
-                                          size: 25.0,
-                                        ),
-                                        Text(
-                                          "$username",
-                                          style: TextStyle(
-                                            letterSpacing: 0.5,
-                                            fontWeight: FontWeight.bold,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-                        if (menuItemsVisible)
-                          Column(
-                            children: [
-                              _buildMenuButton("Find match"),
-                              _buildMenuButton("Fight with friend"),
-                            ],
-                          ),
-                        if (menuItemsVisible)
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Opacity(
-                                opacity: -(_animationProfileButton.value - 1),
-                                child: Padding(
-                                  padding: const EdgeInsets.all(8.0),
-                                  child: InkWell(
-                                    customBorder: ContinuousRectangleBorder(
-                                      borderRadius: BorderRadius.circular(25),
-                                    ),
-                                    splashColor: Colors.black.withOpacity(0.1),
-                                    onTap: () {
-                                      Navigator.of(context)
-                                          .push(MaterialPageRoute(
-                                        builder: (context) => CreditsPage(
-                                          precachedLogo: logoImage,
-                                        ),
-                                      ));
-                                    },
-                                    child: SizedBox(
-                                      height: 50,
-                                      child: Hero(
-                                        tag: "Credits_WAND_logo",
-                                        child: logoImage,
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ),
-                              OpenContainer(
-                                closedShape: CircleBorder(),
-                                closedElevation: 0,
-                                openElevation: 0,
-                                tappable: false,
-                                closedBuilder: (context, openContainer) {
-                                  return Transform.translate(
-                                    offset: Offset(
-                                        0, _animationMenuButtons.value * 100),
-                                    child: Padding(
-                                      padding: const EdgeInsets.all(8.0),
-                                      child: IconButton(
-                                        splashRadius:
-                                            Material.defaultSplashRadius - 10.0,
-                                        icon: Icon(Icons.settings),
-                                        iconSize: 35,
-                                        onPressed: () {
-                                          if (!onGoingAnimation) {
-                                            openContainer();
-                                          }
-                                        },
-                                      ),
-                                    ),
-                                  );
-                                },
-                                openBuilder: (context, closeContainer) {
-                                  return SettingsPage(
-                                    popPage: closeContainer,
-                                  );
-                                },
-                              ),
-                            ],
-                          ),
+                        _buildMenuButton("Find match"),
+                        _buildMenuButton("Fight with friend"),
                       ],
                     ),
                   ),
-                ),
+                if (menuItemsVisible) _buildBottomButtons(),
               ],
             ),
           ),

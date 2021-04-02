@@ -1,3 +1,4 @@
+import 'package:device_preview/device_preview.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_keyboard_visibility/flutter_keyboard_visibility.dart';
@@ -15,6 +16,20 @@ void main() async {
   // timeDilation = 10.0;
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
+  // bool useDevicePreview = true;
+  // if (useDevicePreview) {
+  //   runApp(
+  //     DevicePreview(
+  //       builder: (context) {
+  //         return ProviderScope(
+  //           child: KeyboardVisibilityProvider(
+  //             child: Main(),
+  //           ),
+  //         );
+  //       },
+  //     ),
+  //   );
+  // } else {
   runApp(
     ProviderScope(
       child: KeyboardVisibilityProvider(
@@ -22,6 +37,7 @@ void main() async {
       ),
     ),
   );
+  // }
 }
 
 class Main extends StatefulWidget {
@@ -94,6 +110,7 @@ class _MainState extends State<Main> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+        // builder: DevicePreview.appBuilder,
         title: 'Tic-Tac-Toe Mobile',
         theme: ThemeData(
           canvasColor: Colors.white,
