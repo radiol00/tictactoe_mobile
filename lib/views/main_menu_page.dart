@@ -1,10 +1,12 @@
 import 'dart:async';
+import 'dart:math';
 
 import 'package:animations/animations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_keyboard_visibility/flutter_keyboard_visibility.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:wand_tictactoe/providers/firebase_auth_provider.dart';
+import 'package:wand_tictactoe/providers/protip_provider.dart';
 import 'package:wand_tictactoe/views/credits_page.dart';
 import 'package:wand_tictactoe/views/settings_page.dart';
 
@@ -18,6 +20,7 @@ class MainMenuPage extends StatefulWidget {
 
 class _MainMenuPageState extends State<MainMenuPage>
     with TickerProviderStateMixin {
+  ScrollController _scrollController;
   AnimationController _animationController;
   Animation _animationMenuButtons;
   Animation _animationProfileButton;
@@ -28,10 +31,44 @@ class _MainMenuPageState extends State<MainMenuPage>
   bool onGoingAnimation = true;
   bool menuItemsVisible = false;
   String username;
+  Protip protip;
+  Timer protipTimer;
+
+  void randomizeProtip() {
+    List<Protip> result = context.read(protipProvider);
+    var copy = result.toList();
+    final _random = Random();
+    copy.removeWhere(
+        (element) => protip == null ? false : element.id == protip.id);
+    setState(() {
+      protip = copy[_random.nextInt(copy.length)];
+    });
+  }
+
+  void runProtipAnimationTimer() {
+    protipTimer = Timer.periodic(Duration(seconds: 10), (timer) async {
+      if (_scrollController.hasClients &&
+          _scrollController.position.pixels == 0)
+        await _scrollController.animateTo(
+            _scrollController.position.maxScrollExtent,
+            duration: Duration(seconds: 2),
+            curve: Curves.easeInOut);
+      await Future.delayed(Duration(seconds: 3));
+      if (_scrollController.hasClients)
+        await _scrollController.animateTo(0,
+            duration: Duration(seconds: 2), curve: Curves.easeInOut);
+      if (mounted) randomizeProtip();
+      if (!mounted) timer.cancel();
+    });
+  }
 
   @override
   void initState() {
     super.initState();
+    _scrollController = ScrollController();
+
+    randomizeProtip();
+    runProtipAnimationTimer();
     username = context
         .read(firebaseAuthController)
         ?.localUser
@@ -135,8 +172,35 @@ class _MainMenuPageState extends State<MainMenuPage>
     return SafeArea(
       child: Column(
         children: [
-          Placeholder(
-            fallbackHeight: MediaQuery.of(context).size.height * 0.3,
+          Image.asset(
+            "assets/game_title.png",
+            height: MediaQuery.of(context).size.height * 0.3,
+          ),
+          // Placeholder(
+          //   fallbackHeight: MediaQuery.of(context).size.height * 0.3,
+          // ),
+          Opacity(
+            opacity: -(_animationProfileButton.value - 1),
+            child: SizedBox(
+              height: 20,
+              child: SingleChildScrollView(
+                controller: _scrollController,
+                scrollDirection: Axis.horizontal,
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 24.0),
+                  child: Row(
+                    children: [
+                      Text(
+                        "Protip: ${protip?.text}",
+                        style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            color: Colors.black.withOpacity(0.4)),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
           ),
           Flexible(
             flex: 1,
@@ -152,7 +216,7 @@ class _MainMenuPageState extends State<MainMenuPage>
                                 MediaQuery.of(context).size.width,
                             0),
                         child: Padding(
-                          padding: const EdgeInsets.all(8.0),
+                          padding: const EdgeInsets.symmetric(horizontal: 8.0),
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.start,
                             children: [
@@ -259,6 +323,7 @@ class _MainMenuPageState extends State<MainMenuPage>
 
   @override
   void dispose() {
+    protipTimer?.cancel();
     _animationController.dispose();
     super.dispose();
   }
