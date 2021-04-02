@@ -57,8 +57,10 @@ class _MainMenuPageState extends State<MainMenuPage>
       if (_scrollController.hasClients)
         await _scrollController.animateTo(0,
             duration: Duration(seconds: 2), curve: Curves.easeInOut);
-      if (mounted) randomizeProtip();
-      if (!mounted) timer.cancel();
+      if (mounted)
+        randomizeProtip();
+      else
+        timer.cancel();
     });
   }
 
