@@ -9,8 +9,10 @@ import 'package:wand_tictactoe/views/auth_page.dart';
 import 'package:wand_tictactoe/views/landing_page.dart';
 import 'package:wand_tictactoe/views/main_menu_page.dart';
 import 'package:wand_tictactoe/widgets/wand_progress_indicator.dart';
+// import 'package:flutter/scheduler.dart' show timeDilation;
 
 void main() async {
+  // timeDilation = 10.0;
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
   runApp(

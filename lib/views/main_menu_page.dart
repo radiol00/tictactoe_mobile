@@ -1,11 +1,11 @@
 import 'dart:async';
 
 import 'package:animations/animations.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_keyboard_visibility/flutter_keyboard_visibility.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:wand_tictactoe/providers/firebase_auth_provider.dart';
+import 'package:wand_tictactoe/views/credits_page.dart';
 import 'package:wand_tictactoe/views/settings_page.dart';
 
 class MainMenuPage extends StatefulWidget {
@@ -18,7 +18,6 @@ class MainMenuPage extends StatefulWidget {
 
 class _MainMenuPageState extends State<MainMenuPage>
     with TickerProviderStateMixin {
-  Function logout;
   AnimationController _animationController;
   Animation _animationMenuButtons;
   Animation _animationProfileButton;
@@ -33,7 +32,6 @@ class _MainMenuPageState extends State<MainMenuPage>
   @override
   void initState() {
     super.initState();
-    logout = context.read(firebaseAuthController).logout;
     username = context
         .read(firebaseAuthController)
         ?.localUser
@@ -188,19 +186,45 @@ class _MainMenuPageState extends State<MainMenuPage>
                         ],
                       ),
                     if (menuItemsVisible)
-                      OpenContainer(
-                        transitionDuration: Duration(milliseconds: 500),
-                        tappable: false,
-                        closedBuilder: (context, action) {
-                          return Padding(
-                            padding:
-                                const EdgeInsets.only(bottom: 8.0, right: 8.0),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.end,
-                              children: [
-                                Transform.translate(
-                                  offset: Offset(
-                                      0, _animationMenuButtons.value * 100),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Opacity(
+                            opacity: -(_animationProfileButton.value - 1),
+                            child: Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: InkWell(
+                                customBorder: ContinuousRectangleBorder(
+                                  borderRadius: BorderRadius.circular(25),
+                                ),
+                                splashColor: Colors.black.withOpacity(0.1),
+                                onTap: () {
+                                  Navigator.of(context).push(MaterialPageRoute(
+                                    builder: (context) => CreditsPage(),
+                                  ));
+                                },
+                                child: Hero(
+                                  tag: "Credits_WAND_logo",
+                                  child: Image.asset(
+                                    "assets/credits.png",
+                                    height: 50,
+                                    cacheHeight: 50,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                          OpenContainer(
+                            closedShape: CircleBorder(),
+                            closedElevation: 0,
+                            openElevation: 0,
+                            tappable: false,
+                            closedBuilder: (context, openContainer) {
+                              return Transform.translate(
+                                offset: Offset(
+                                    0, _animationMenuButtons.value * 100),
+                                child: Padding(
+                                  padding: const EdgeInsets.all(8.0),
                                   child: IconButton(
                                     splashRadius:
                                         Material.defaultSplashRadius - 10.0,
@@ -208,21 +232,20 @@ class _MainMenuPageState extends State<MainMenuPage>
                                     iconSize: 35,
                                     onPressed: () {
                                       if (!onGoingAnimation) {
-                                        // logout();
-                                        action();
+                                        openContainer();
                                       }
                                     },
                                   ),
                                 ),
-                              ],
-                            ),
-                          );
-                        },
-                        openBuilder: (context, action) {
-                          return SettingsPage(
-                            popPage: action,
-                          );
-                        },
+                              );
+                            },
+                            openBuilder: (context, closeContainer) {
+                              return SettingsPage(
+                                popPage: closeContainer,
+                              );
+                            },
+                          ),
+                        ],
                       ),
                   ],
                 ),

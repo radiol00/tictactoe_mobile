@@ -10,6 +10,15 @@ class SettingsPage extends StatefulWidget {
 }
 
 class _SettingsPageState extends State<SettingsPage> {
+  void Function() logout;
+
+  @override
+  void initState() {
+    super.initState();
+
+    logout = context.read(firebaseAuthController).logout;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -27,15 +36,9 @@ class _SettingsPageState extends State<SettingsPage> {
               ),
               Column(
                 children: [
-                  // ElevatedButton(
-                  //   onPressed: () async {
-                  //     context.read(firebaseAuthController).changePasswd();
-                  //   },
-                  //   child: Text("Change passwd"),
-                  // ),
                   ElevatedButton(
                     onPressed: () async {
-                      context.read(firebaseAuthController).logout();
+                      logout();
                       widget.popPage();
                     },
                     child: Text("Logout"),
