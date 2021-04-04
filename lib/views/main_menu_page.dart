@@ -46,7 +46,7 @@ class _MainMenuPageState extends State<MainMenuPage>
   Protip protip;
   Timer protipTimer;
 
-  Stream<String> userInfoStream;
+  Stream<String> userDisplayNameStream;
 
   void randomizeProtip() {
     List<Protip> result = context.read(protipProvider);
@@ -85,12 +85,8 @@ class _MainMenuPageState extends State<MainMenuPage>
 
     randomizeProtip();
     runProtipAnimationTimer();
-    userInfoStream = context.read(firebaseAuthController).userDisplayNameStream;
-    // username = context
-    //     .read(firebaseAuthController)
-    //     ?.localUser
-    //     ?.firebaseUserObject
-    //     ?.displayName;
+    userDisplayNameStream =
+        context.read(firebaseAuthController).userDisplayNameStream;
     _animationController = AnimationController(
       vsync: this,
       duration: Duration(seconds: 1),
@@ -217,7 +213,7 @@ class _MainMenuPageState extends State<MainMenuPage>
                     size: 25.0,
                   ),
                   StreamBuilder(
-                    stream: userInfoStream,
+                    stream: userDisplayNameStream,
                     builder: (context, snapshot) {
                       if (snapshot.hasData) {
                         return Text(

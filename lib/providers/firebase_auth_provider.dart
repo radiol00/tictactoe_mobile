@@ -49,8 +49,7 @@ class FirebaseAuthNotifier extends StateNotifier<AsyncValue<TTTUser>> {
     passwd = passwd.trim();
     await _connection.auth
         .createUserWithEmailAndPassword(email: email, password: passwd)
-      ..user.updateProfile(displayName: username)
-      ..user.reload();
+      ..user.updateProfile(displayName: username);
   }
 
   Future<void> loginWithEmailAndPasswd(String email, String passwd) async {
