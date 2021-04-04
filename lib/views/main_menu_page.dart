@@ -2,12 +2,14 @@ import 'dart:async';
 import 'dart:math';
 
 import 'package:animations/animations.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_keyboard_visibility/flutter_keyboard_visibility.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:wand_tictactoe/models/ttt_user.dart';
 import 'package:wand_tictactoe/providers/firebase_auth_provider.dart';
 import 'package:wand_tictactoe/providers/protip_provider.dart';
+import 'package:wand_tictactoe/services/wand_firebase_connection.dart';
 import 'package:wand_tictactoe/views/credits_page.dart';
 import 'package:wand_tictactoe/views/settings_page.dart';
 
@@ -41,9 +43,10 @@ class _MainMenuPageState extends State<MainMenuPage>
   int menuButtonId = 0;
   bool onGoingAnimation = true;
   bool menuItemsVisible = false;
-  String username;
   Protip protip;
   Timer protipTimer;
+
+  Stream<String> userInfoStream;
 
   void randomizeProtip() {
     List<Protip> result = context.read(protipProvider);
@@ -82,11 +85,12 @@ class _MainMenuPageState extends State<MainMenuPage>
 
     randomizeProtip();
     runProtipAnimationTimer();
-    username = context
-        .read(firebaseAuthController)
-        ?.localUser
-        ?.firebaseUserObject
-        ?.displayName;
+    userInfoStream = context.read(firebaseAuthController).userDisplayNameStream;
+    // username = context
+    //     .read(firebaseAuthController)
+    //     ?.localUser
+    //     ?.firebaseUserObject
+    //     ?.displayName;
     _animationController = AnimationController(
       vsync: this,
       duration: Duration(seconds: 1),
@@ -212,12 +216,20 @@ class _MainMenuPageState extends State<MainMenuPage>
                     Icons.person,
                     size: 25.0,
                   ),
-                  Text(
-                    "$username",
-                    style: TextStyle(
-                      letterSpacing: 0.5,
-                      fontWeight: FontWeight.bold,
-                    ),
+                  StreamBuilder(
+                    stream: userInfoStream,
+                    builder: (context, snapshot) {
+                      if (snapshot.hasData) {
+                        return Text(
+                          "${snapshot.data}",
+                          style: TextStyle(
+                            letterSpacing: 0.5,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        );
+                      } else
+                        return Text("");
+                    },
                   ),
                 ],
               ),
@@ -302,11 +314,7 @@ class _MainMenuPageState extends State<MainMenuPage>
 
     return ProviderListener(
       provider: firebaseAuthController.state,
-      onChange: (context, AsyncValue<TTTUser> value) {
-        value.whenData((value) {
-          print("essa");
-        });
-      },
+      onChange: (context, AsyncValue<TTTUser> value) {},
       child: SafeArea(
         child: Column(
           children: [

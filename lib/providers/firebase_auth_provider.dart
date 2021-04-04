@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:wand_tictactoe/models/ttt_user.dart';
@@ -29,12 +31,26 @@ class FirebaseAuthNotifier extends StateNotifier<AsyncValue<TTTUser>> {
       });
   }
 
+  Stream<String> get userDisplayNameStream {
+    Stream<User> userChanges = _connection.auth.userChanges();
+    StreamTransformer<User, String> transformer =
+        StreamTransformer<User, String>.fromHandlers(
+      handleData: (data, sink) {
+        sink.add(data.displayName);
+      },
+    );
+    return userChanges.transform(transformer);
+  }
+
   Future<void> registerWithEmailAndPasswd(
       String email, String passwd, String username) async {
+    username = username.trim();
     email = email.trim();
     passwd = passwd.trim();
     await _connection.auth
-        .createUserWithEmailAndPassword(email: email, password: passwd);
+        .createUserWithEmailAndPassword(email: email, password: passwd)
+      ..user.updateProfile(displayName: username)
+      ..user.reload();
   }
 
   Future<void> loginWithEmailAndPasswd(String email, String passwd) async {

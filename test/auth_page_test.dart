@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_keyboard_visibility/flutter_keyboard_visibility.dart';
@@ -646,6 +648,10 @@ class MockFirebaseAuthNotifier extends FirebaseAuthNotifier {
         throw new FirebaseAuthException(code: "test", message: "test message");
         return;
     }
+  }
+
+  Stream<String> get userDisplayNameStream {
+    return Stream.value("test");
   }
 
   @override

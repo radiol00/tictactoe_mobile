@@ -66,16 +66,12 @@ class _AuthPageState extends State<AuthPage>
     setState(() => loadingRequest = true);
     try {
       if (mode == AuthPageMode.signin) {
-        await context
-            .read(firebaseAuthController)
-            .registerWithEmailAndPasswd(email, passwd, username);
+        await registerWithEmailAndPasswd(email, passwd, username);
         if (mounted) {
           setState(() => loadingRequest = false);
         }
       } else if (mode == AuthPageMode.login) {
-        await context
-            .read(firebaseAuthController)
-            .loginWithEmailAndPasswd(email, passwd);
+        await loginWithEmailAndPasswd(email, passwd);
         if (mounted) {
           setState(() => loadingRequest = false);
         }
