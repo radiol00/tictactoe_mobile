@@ -37,9 +37,17 @@ class _AuthPageState extends State<AuthPage>
   bool showConfirmPasswordInput = true;
   bool onGoingAnimation = false;
 
+  Future<void> Function(String email, String passwd, String username)
+      registerWithEmailAndPasswd;
+  Future<void> Function(String email, String passwd) loginWithEmailAndPasswd;
+
   @override
   void initState() {
     super.initState();
+    registerWithEmailAndPasswd =
+        context.read(firebaseAuthController).registerWithEmailAndPasswd;
+    loginWithEmailAndPasswd =
+        context.read(firebaseAuthController).loginWithEmailAndPasswd;
     if (widget.initialMode != null) mode = widget.initialMode;
     if (mode == AuthPageMode.login) showConfirmPasswordInput = false;
 
@@ -60,7 +68,7 @@ class _AuthPageState extends State<AuthPage>
       if (mode == AuthPageMode.signin) {
         await context
             .read(firebaseAuthController)
-            .registerWithEmailAndPasswd(email, passwd);
+            .registerWithEmailAndPasswd(email, passwd, username);
         if (mounted) {
           setState(() => loadingRequest = false);
         }

@@ -2,9 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_keyboard_visibility/flutter_keyboard_visibility.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:wand_tictactoe/providers/firebase_auth_provider.dart';
 import 'package:wand_tictactoe/providers/landing_page_visibility_provider.dart';
 import 'package:wand_tictactoe/services/wand_shared_preferences.dart';
 import 'package:wand_tictactoe/views/landing_page.dart';
+
+import 'auth_page_test.dart';
 
 void main() {
   Widget makeWidgetTestable(Widget child) {
@@ -26,6 +29,10 @@ void main() {
         overrides: [
           landingPageVisibilityController.overrideWithValue(
             MockLandingPageVisibilityNotifier(done: false),
+          ),
+          firebaseAuthController.overrideWithValue(
+            MockFirebaseAuthNotifier(
+                MockFirebaseAuthNotifierMode.noInteraction),
           ),
         ],
       ),

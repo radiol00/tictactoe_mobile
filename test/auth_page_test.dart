@@ -47,6 +47,12 @@ void main() {
             initialMode: AuthPageMode.login,
           ),
         ),
+        overrides: [
+          firebaseAuthController.overrideWithValue(
+            MockFirebaseAuthNotifier(
+                MockFirebaseAuthNotifierMode.noInteraction),
+          ),
+        ],
       ),
     );
 
@@ -84,6 +90,12 @@ void main() {
             initialMode: AuthPageMode.signin,
           ),
         ),
+        overrides: [
+          firebaseAuthController.overrideWithValue(
+            MockFirebaseAuthNotifier(
+                MockFirebaseAuthNotifierMode.noInteraction),
+          ),
+        ],
       ),
     );
 
@@ -622,7 +634,8 @@ class MockFirebaseAuthNotifier extends FirebaseAuthNotifier {
   }
 
   @override
-  Future<void> registerWithEmailAndPasswd(String email, String passwd) async {
+  Future<void> registerWithEmailAndPasswd(
+      String email, String passwd, String username) async {
     switch (_mode) {
       case MockFirebaseAuthNotifierMode.noInteraction:
         return;
