@@ -29,6 +29,7 @@ void main() {
   final emailInputFinder = find.byKey(Key("E-mail_input"));
   final passwordInputFinder = find.byKey(Key("Password_input"));
   final confirmPasswordInputFinder = find.byKey(Key("Confirm password_input"));
+  final usernameInputFinder = find.byKey(Key("Username_input"));
   final wrongEmailFormatError = find.text("Wrong email format!");
   final fieldRequiredError = find.text("Field required!");
   final passwdLengthRequiredError =
@@ -138,23 +139,30 @@ void main() {
       expect(confirmPasswordInputFinder, findsOneWidget);
       expect(toSignInButtonFinder, findsNothing);
       expect(toLogInButtonFinder, findsOneWidget);
+      expect(usernameInputFinder, findsOneWidget);
 
       // No errors
       expect(fieldRequiredError, findsNothing);
 
+      // 4 errors
+      await tester.tap(signInFinder);
+      await tester.pump();
+      expect(fieldRequiredError, findsNWidgets(4));
+
       // 3 errors
+      await tester.enterText(emailInputFinder, "test@example.com");
       await tester.tap(signInFinder);
       await tester.pump();
       expect(fieldRequiredError, findsNWidgets(3));
 
       // 2 errors
-      await tester.enterText(emailInputFinder, "test@example.com");
+      await tester.enterText(passwordInputFinder, "123123");
       await tester.tap(signInFinder);
       await tester.pump();
       expect(fieldRequiredError, findsNWidgets(2));
 
       // 1 error
-      await tester.enterText(passwordInputFinder, "123123");
+      await tester.enterText(usernameInputFinder, "test");
       await tester.tap(signInFinder);
       await tester.pump();
       expect(fieldRequiredError, findsNWidgets(1));
@@ -192,6 +200,7 @@ void main() {
       expect(confirmPasswordInputFinder, findsOneWidget);
       expect(toSignInButtonFinder, findsNothing);
       expect(toLogInButtonFinder, findsOneWidget);
+      expect(usernameInputFinder, findsOneWidget);
 
       // No errors
       expect(passwdLengthRequiredError, findsNothing);
@@ -235,6 +244,7 @@ void main() {
       expect(confirmPasswordInputFinder, findsOneWidget);
       expect(toSignInButtonFinder, findsNothing);
       expect(toLogInButtonFinder, findsOneWidget);
+      expect(usernameInputFinder, findsOneWidget);
 
       // No errors
       expect(passwdConfirmRequiredError, findsNothing);
@@ -279,6 +289,7 @@ void main() {
       expect(confirmPasswordInputFinder, findsOneWidget);
       expect(toSignInButtonFinder, findsNothing);
       expect(toLogInButtonFinder, findsOneWidget);
+      expect(usernameInputFinder, findsOneWidget);
 
       // No errors
       expect(wrongEmailFormatError, findsNothing);
@@ -324,6 +335,7 @@ void main() {
       // so it's there even if it's not visible
       expect(toSignInButtonFinder, findsOneWidget);
       expect(toLogInButtonFinder, findsNothing);
+      expect(usernameInputFinder, findsOneWidget);
 
       // No errors
       expect(fieldRequiredError, findsNothing);
@@ -374,6 +386,7 @@ void main() {
       // so it's there even if it's not visible
       expect(toSignInButtonFinder, findsOneWidget);
       expect(toLogInButtonFinder, findsNothing);
+      expect(usernameInputFinder, findsOneWidget);
 
       // No errors
       expect(wrongEmailFormatError, findsNothing);
@@ -464,6 +477,7 @@ void main() {
     // so it's there even if it's not visible
     expect(toSignInButtonFinder, findsOneWidget);
     expect(toLogInButtonFinder, findsNothing);
+    expect(usernameInputFinder, findsOneWidget);
 
     await tester.enterText(emailInputFinder, "test@example.com");
     await tester.enterText(passwordInputFinder, "testtest");
@@ -504,6 +518,7 @@ void main() {
     // so it's there even if it's not visible
     expect(toSignInButtonFinder, findsOneWidget);
     expect(toLogInButtonFinder, findsNothing);
+    expect(usernameInputFinder, findsOneWidget);
 
     await tester.tap(toSignInButtonFinder);
     await tester.pumpAndSettle();
@@ -517,6 +532,7 @@ void main() {
     expect(toSignInButtonFinder, findsNothing);
     expect(toLogInButtonFinder, findsOneWidget);
 
+    await tester.enterText(usernameInputFinder, "test");
     await tester.enterText(emailInputFinder, "test@example.com");
     await tester.enterText(passwordInputFinder, "testtest");
     await tester.enterText(confirmPasswordInputFinder, "testtest");
@@ -560,6 +576,7 @@ void main() {
     // so it's there even if it's not visible
     expect(toSignInButtonFinder, findsOneWidget);
     expect(toLogInButtonFinder, findsNothing);
+    expect(usernameInputFinder, findsOneWidget);
 
     await tester.tap(toSignInButtonFinder);
     await tester.pumpAndSettle();
@@ -573,6 +590,7 @@ void main() {
     expect(toSignInButtonFinder, findsNothing);
     expect(toLogInButtonFinder, findsOneWidget);
 
+    await tester.enterText(usernameInputFinder, "test");
     await tester.enterText(emailInputFinder, "test@example.com");
     await tester.enterText(passwordInputFinder, "testtest");
     await tester.enterText(confirmPasswordInputFinder, "testtest");

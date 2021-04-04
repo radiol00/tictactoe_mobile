@@ -21,6 +21,7 @@ class _AuthPageState extends State<AuthPage>
   String email;
   String passwd;
   String confirmPasswd;
+  String username;
 
   RegExp emailRegexp = RegExp(
       r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+");
@@ -199,6 +200,29 @@ class _AuthPageState extends State<AuthPage>
               key: _formKey,
               child: Column(
                 children: [
+                  AnimatedCrossFade(
+                    duration: Duration(milliseconds: 500),
+                    sizeCurve: Curves.easeOut,
+                    crossFadeState: showConfirmPasswordInput
+                        ? CrossFadeState.showFirst
+                        : CrossFadeState.showSecond,
+                    firstChild: _buildTextFormField(
+                      text: "Username",
+                      icon: Icons.person,
+                      validator: (value) {
+                        value = value.trim();
+                        if (mode == AuthPageMode.signin) {
+                          if (value == "") return "Field required!";
+                        } else {
+                          return null;
+                        }
+                      },
+                      onSaved: (newValue) {
+                        username = newValue;
+                      },
+                    ),
+                    secondChild: Container(),
+                  ),
                   _buildTextFormField(
                     text: "E-mail",
                     icon: Icons.alternate_email_rounded,

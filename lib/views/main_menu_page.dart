@@ -86,7 +86,7 @@ class _MainMenuPageState extends State<MainMenuPage>
         .read(firebaseAuthController)
         ?.localUser
         ?.firebaseUserObject
-        ?.email;
+        ?.displayName;
     _animationController = AnimationController(
       vsync: this,
       duration: Duration(seconds: 1),

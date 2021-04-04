@@ -10,15 +10,6 @@ class CreditsPage extends StatefulWidget {
 class _CreditsPageState extends State<CreditsPage> {
   @override
   Widget build(BuildContext context) {
-    // logo = Image.asset(
-    //   "assets/credits.png",
-    //   width: MediaQuery.of(context).orientation == Orientation.portrait
-    //       ? MediaQuery.of(context).size.width / 2
-    //       : null,
-    //   height: MediaQuery.of(context).orientation == Orientation.landscape
-    //       ? MediaQuery.of(context).size.height / 6
-    //       : null,
-    // );
     return Scaffold(
       body: SafeArea(
         child: Column(
