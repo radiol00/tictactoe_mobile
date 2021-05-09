@@ -33,13 +33,13 @@ class FirebaseAuthNotifier extends StateNotifier<AsyncValue<TTTUser>> {
 
   Stream<String> get userDisplayNameStream {
     Stream<User> userChanges = _connection.auth.userChanges();
-    StreamTransformer<User, String> transformer =
+    StreamTransformer<User, String> displayNameStreamDecapsulation =
         StreamTransformer<User, String>.fromHandlers(
-      handleData: (data, sink) {
+      handleData: (User data, sink) {
         sink.add(data.displayName);
       },
     );
-    return userChanges.transform(transformer);
+    return userChanges.transform(displayNameStreamDecapsulation);
   }
 
   Future<void> registerWithEmailAndPasswd(

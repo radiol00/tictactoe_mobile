@@ -2,16 +2,19 @@ import 'dart:async';
 import 'dart:math';
 
 import 'package:animations/animations.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_keyboard_visibility/flutter_keyboard_visibility.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:wand_tictactoe/models/ttt_user.dart';
+import 'package:grpc/grpc.dart';
 import 'package:wand_tictactoe/providers/firebase_auth_provider.dart';
+import 'package:wand_tictactoe/providers/grpc_provider.dart';
 import 'package:wand_tictactoe/providers/protip_provider.dart';
-import 'package:wand_tictactoe/services/wand_firebase_connection.dart';
 import 'package:wand_tictactoe/views/credits_page.dart';
 import 'package:wand_tictactoe/views/settings_page.dart';
+import 'package:wand_tictactoe/widgets/wand_progress_indicator.dart';
+
+import 'package:wand_tictactoe/proto/ttt_service.pbgrpc.dart' as proto;
+import 'package:wand_tictactoe/widgets/wand_snackbar.dart';
 
 class MainMenuPage extends StatefulWidget {
   MainMenuPage({this.key, this.delayInitAnimations = false}) : super(key: key);
@@ -38,6 +41,7 @@ class _MainMenuPageState extends State<MainMenuPage>
   Animation _animationMenuButtons;
   Animation _animationProfileButton;
   CurvedAnimation _animationMenuButtonsCurve;
+  WANDgRPCConnection grpc;
 
   CurvedAnimation _animationProfileButtonCurve;
   int menuButtonId = 0;
@@ -81,6 +85,9 @@ class _MainMenuPageState extends State<MainMenuPage>
   @override
   void initState() {
     super.initState();
+
+    grpc = context.read(grpcProvider)..dial();
+
     _scrollController = ScrollController();
 
     randomizeProtip();
@@ -142,6 +149,7 @@ class _MainMenuPageState extends State<MainMenuPage>
 
   Widget _buildMenuButton(
     String text,
+    Function onPressed,
   ) {
     bool isEven = menuButtonId % 2 == 0;
     menuButtonId += 1;
@@ -167,9 +175,7 @@ class _MainMenuPageState extends State<MainMenuPage>
                   ),
                 ),
               ),
-              onPressed: () {
-                print(onGoingAnimation);
-              },
+              onPressed: onPressed,
               child: Text("$text"),
             ),
           ),
@@ -304,66 +310,119 @@ class _MainMenuPageState extends State<MainMenuPage>
     );
   }
 
+  void findMatch() async {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => _buildMMDialog(),
+    );
+    ResponseStream<proto.Game> stream = grpc.joinMatchmaking();
+    if (stream == null) {
+      Navigator.of(context).pop();
+      ScaffoldMessenger.of(context).showSnackBar(
+        buildSnackBar(context, "There was an error in match making"),
+      );
+      return;
+    }
+    try {
+      proto.Game game = await stream.first;
+      print(game);
+    } catch (e) {
+      if (e is GrpcError && e.code == 1) {
+        print("Stream break");
+      } else {
+        print(e);
+      }
+    }
+  }
+
+  Widget _buildMMDialog() {
+    return Dialog(
+      elevation: 0.0,
+      backgroundColor: Colors.white60,
+      child: Padding(
+        padding: const EdgeInsets.all(32.0),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            WANDProgressIndicator(
+              type: WANDProgressIndicatorType.fullscreen,
+            ),
+            SizedBox(
+              height: 40.0,
+            ),
+            Text("Looking for opponent..."),
+            SizedBox(
+              height: 20,
+            ),
+            ElevatedButton(
+                onPressed: () {
+                  grpc.leaveMatchmaking();
+                  Navigator.of(context).pop();
+                },
+                child: Text("Cancel"))
+          ],
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     menuButtonId = 0;
-
-    return ProviderListener(
-      provider: firebaseAuthController.state,
-      onChange: (context, AsyncValue<TTTUser> value) {},
-      child: SafeArea(
-        child: Column(
-          children: [
-            Image.asset(
-              "assets/game_title.png",
-              height: MediaQuery.of(context).size.height * 0.3,
-            ),
-            Opacity(
-              opacity: -(_animationProfileButton.value - 1),
-              child: SizedBox(
-                height: 20,
-                child: SingleChildScrollView(
-                  controller: _scrollController,
-                  scrollDirection: Axis.horizontal,
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 24.0),
-                    child: Row(
-                      children: [
-                        Text(
-                          "Protip: ${protip?.text}",
-                          style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              color: Colors.black.withOpacity(0.4)),
-                        ),
-                      ],
-                    ),
+    return SafeArea(
+      child: Column(
+        children: [
+          Image.asset(
+            "assets/game_title.png",
+            height: MediaQuery.of(context).size.height * 0.3,
+          ),
+          Opacity(
+            opacity: -(_animationProfileButton.value - 1),
+            child: SizedBox(
+              height: 20,
+              child: SingleChildScrollView(
+                controller: _scrollController,
+                scrollDirection: Axis.horizontal,
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 24.0),
+                  child: Row(
+                    children: [
+                      Text(
+                        "Protip: ${protip?.text}",
+                        style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            color: Colors.black.withOpacity(0.4)),
+                      ),
+                    ],
                   ),
                 ),
               ),
             ),
-            Flexible(
-              flex: 1,
-              child: Stack(
-                children: [
-                  _buildBackground(),
-                  if (menuItemsVisible) _buildProfileButton(),
-                  if (menuItemsVisible)
-                    Align(
-                      alignment: Alignment.center,
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          _buildMenuButton("Find match"),
-                          _buildMenuButton("Fight with friend"),
-                        ],
-                      ),
+          ),
+          Flexible(
+            flex: 1,
+            child: Stack(
+              children: [
+                _buildBackground(),
+                if (menuItemsVisible) _buildProfileButton(),
+                if (menuItemsVisible)
+                  Align(
+                    alignment: Alignment.center,
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        _buildMenuButton(
+                            "Find match", grpc.connected ? findMatch : null),
+                        _buildMenuButton("Fight with friend", () {}),
+                      ],
                     ),
-                  if (menuItemsVisible) _buildBottomButtons(),
-                ],
-              ),
+                  ),
+                if (menuItemsVisible) _buildBottomButtons(),
+              ],
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }

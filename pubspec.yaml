@@ -36,6 +36,9 @@ dependencies:
   firebase_auth: ^1.0.1
   cloud_firestore: ^1.0.2
 
+  protobuf: ^2.0.0
+  grpc: ^3.0.0
+
   flutter_keyboard_visibility: ^5.0.0
 
   device_preview: ^0.7.1
