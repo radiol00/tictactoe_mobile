@@ -9,26 +9,32 @@ final grpcProvider =
 class WANDgRPCConnection {
   ClientChannel _channel;
   proto.TTTClient _client;
-  bool _connected = false;
   ProviderReference _ref;
   ResponseStream _stream;
   bool _listening = false;
+  String _host = "192.168.0.100";
+  int _port = 9999;
 
   WANDgRPCConnection(ref) {
+    _ref = ref;
     _channel = ClientChannel(
-      "192.168.0.100",
-      port: 9999,
+      _host,
+      port: _port,
       options: ChannelOptions(
         credentials: ChannelCredentials.insecure(),
       ),
     );
-
-    _ref = ref;
   }
 
-  void dial() {
+  void dial() async {
+    _channel = ClientChannel(
+      _host,
+      port: _port,
+      options: ChannelOptions(
+        credentials: ChannelCredentials.insecure(),
+      ),
+    );
     _client = proto.TTTClient(_channel);
-    _connected = true;
   }
 
   ResponseStream<proto.Game> joinMatchmaking() {
@@ -37,8 +43,12 @@ class WANDgRPCConnection {
     if (tttuser == null) return null;
     _stream = _client.joinMatchmaking(
       proto.User(
-          id: tttuser.firebaseUserObject.uid,
-          name: tttuser.firebaseUserObject.displayName),
+        id: tttuser.firebaseUserObject.uid,
+        name: tttuser.firebaseUserObject.displayName,
+      ),
+      options: CallOptions(
+        timeout: Duration(seconds: 3),
+      ),
     );
     _listening = true;
     return _stream;
@@ -50,6 +60,5 @@ class WANDgRPCConnection {
     _listening = false;
   }
 
-  bool get connected => _connected;
   bool get listening => _listening;
 }

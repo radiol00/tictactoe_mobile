@@ -86,7 +86,7 @@ class _MainMenuPageState extends State<MainMenuPage>
   void initState() {
     super.initState();
 
-    grpc = context.read(grpcProvider)..dial();
+    grpc = context.read(grpcProvider);
 
     _scrollController = ScrollController();
 
@@ -316,6 +316,7 @@ class _MainMenuPageState extends State<MainMenuPage>
       barrierDismissible: false,
       builder: (context) => _buildMMDialog(),
     );
+    grpc.dial();
     ResponseStream<proto.Game> stream = grpc.joinMatchmaking();
     if (stream == null) {
       Navigator.of(context).pop();
@@ -330,6 +331,12 @@ class _MainMenuPageState extends State<MainMenuPage>
     } catch (e) {
       if (e is GrpcError && e.code == 1) {
         print("Stream break");
+      } else if (e is GrpcError && e.code == 4) {
+        grpc.leaveMatchmaking();
+        Navigator.of(context).pop();
+        ScaffoldMessenger.of(context).showSnackBar(
+          buildSnackBar(context, "There was an error in match making"),
+        );
       } else {
         print(e);
       }
@@ -412,8 +419,7 @@ class _MainMenuPageState extends State<MainMenuPage>
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        _buildMenuButton(
-                            "Find match", grpc.connected ? findMatch : null),
+                        _buildMenuButton("Find match", findMatch),
                         _buildMenuButton("Fight with friend", () {}),
                       ],
                     ),
