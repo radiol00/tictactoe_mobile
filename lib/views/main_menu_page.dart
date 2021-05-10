@@ -326,8 +326,17 @@ class _MainMenuPageState extends State<MainMenuPage>
       return;
     }
     try {
-      proto.Game game = await stream.first;
-      print(game);
+      var connTester = await stream.first;
+      if (connTester.id == "") {
+        proto.Game game = await stream.first;
+        print(game.id);
+      } else {
+        grpc.leaveMatchmaking();
+        Navigator.of(context).pop();
+        ScaffoldMessenger.of(context).showSnackBar(
+          buildSnackBar(context, "There was an error in match making"),
+        );
+      }
     } catch (e) {
       if (e is GrpcError && e.code == 1) {
         print("Stream break");
