@@ -317,7 +317,7 @@ class _MainMenuPageState extends State<MainMenuPage>
       builder: (context) => _buildMMDialog(),
     );
     grpc.dial();
-    ResponseStream<proto.Game> stream = grpc.joinMatchmaking();
+    Stream<proto.Game> stream = grpc.joinMatchmaking();
     if (stream == null) {
       Navigator.of(context).pop();
       ScaffoldMessenger.of(context).showSnackBar(
@@ -325,31 +325,36 @@ class _MainMenuPageState extends State<MainMenuPage>
       );
       return;
     }
+
+    // TIMEOUT TIMER
+    var timer = Timer(Duration(seconds: 3), () {
+      grpc.leaveMatchmaking();
+      Navigator.of(context).pop();
+      ScaffoldMessenger.of(context).showSnackBar(
+        buildSnackBar(context, "Problem with connection"),
+      );
+    });
+
     try {
       var connTester = await stream.first;
       if (connTester.id == "") {
+        print("HANDSHAKE!");
+        timer.cancel();
         proto.Game game = await stream.first;
-        print(game.id);
-      } else {
         grpc.leaveMatchmaking();
         Navigator.of(context).pop();
         ScaffoldMessenger.of(context).showSnackBar(
-          buildSnackBar(context, "There was an error in match making"),
+          buildSnackBar(context, "GAME FOUND"),
         );
       }
     } catch (e) {
       if (e is GrpcError && e.code == 1) {
-        print("Stream break");
-      } else if (e is GrpcError && e.code == 4) {
-        grpc.leaveMatchmaking();
-        Navigator.of(context).pop();
-        ScaffoldMessenger.of(context).showSnackBar(
-          buildSnackBar(context, "There was an error in match making"),
-        );
+        timer.cancel();
       } else {
         print(e);
       }
     }
+    print("I'M LEAVING!");
   }
 
   Widget _buildMMDialog() {

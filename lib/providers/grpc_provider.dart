@@ -37,7 +37,7 @@ class WANDgRPCConnection {
     _client = proto.TTTClient(_channel);
   }
 
-  ResponseStream<proto.Game> joinMatchmaking() {
+  Stream<proto.Game> joinMatchmaking() {
     if (_listening) return null;
     var tttuser = _ref.read(firebaseAuthController.state).data.value;
     if (tttuser == null) return null;
@@ -46,12 +46,9 @@ class WANDgRPCConnection {
         id: tttuser.firebaseUserObject.uid,
         name: tttuser.firebaseUserObject.displayName,
       ),
-      options: CallOptions(
-        timeout: Duration(seconds: 3),
-      ),
     );
     _listening = true;
-    return _stream;
+    return _stream.asBroadcastStream();
   }
 
   void leaveMatchmaking() {
