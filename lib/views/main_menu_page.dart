@@ -7,9 +7,11 @@ import 'package:flutter_keyboard_visibility/flutter_keyboard_visibility.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:grpc/grpc.dart';
 import 'package:wand_tictactoe/providers/firebase_auth_provider.dart';
+import 'package:wand_tictactoe/providers/game_controller_provider.dart';
 import 'package:wand_tictactoe/providers/grpc_provider.dart';
 import 'package:wand_tictactoe/providers/protip_provider.dart';
 import 'package:wand_tictactoe/views/credits_page.dart';
+import 'package:wand_tictactoe/views/game_page.dart';
 import 'package:wand_tictactoe/views/settings_page.dart';
 import 'package:wand_tictactoe/widgets/wand_progress_indicator.dart';
 
@@ -42,6 +44,7 @@ class _MainMenuPageState extends State<MainMenuPage>
   Animation _animationProfileButton;
   CurvedAnimation _animationMenuButtonsCurve;
   WANDgRPCConnection grpc;
+  Function(String) joinGame;
 
   CurvedAnimation _animationProfileButtonCurve;
   int menuButtonId = 0;
@@ -85,7 +88,7 @@ class _MainMenuPageState extends State<MainMenuPage>
   @override
   void initState() {
     super.initState();
-
+    joinGame = context.read(gameController).joinGame;
     grpc = context.read(grpcProvider);
 
     _scrollController = ScrollController();
@@ -338,14 +341,12 @@ class _MainMenuPageState extends State<MainMenuPage>
     try {
       var connTester = await stream.first;
       if (connTester.id == "") {
-        print("HANDSHAKE!");
         timer.cancel();
         proto.Game game = await stream.first;
         grpc.leaveMatchmaking();
         Navigator.of(context).pop();
-        ScaffoldMessenger.of(context).showSnackBar(
-          buildSnackBar(context, "GAME FOUND"),
-        );
+        joinGame(game.id);
+        return;
       }
     } catch (e) {
       if (e is GrpcError && e.code == 1) {
@@ -354,7 +355,6 @@ class _MainMenuPageState extends State<MainMenuPage>
         print(e);
       }
     }
-    print("I'M LEAVING!");
   }
 
   Widget _buildMMDialog() {

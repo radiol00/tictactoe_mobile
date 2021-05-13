@@ -1,10 +1,10 @@
-import 'package:device_preview/device_preview.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_keyboard_visibility/flutter_keyboard_visibility.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:wand_tictactoe/models/ttt_user.dart';
 import 'package:wand_tictactoe/providers/firebase_auth_provider.dart';
+import 'package:wand_tictactoe/providers/game_controller_provider.dart';
 import 'package:wand_tictactoe/providers/landing_page_visibility_provider.dart';
 import 'package:wand_tictactoe/views/auth_page.dart';
 import 'package:wand_tictactoe/views/landing_page.dart';
@@ -76,6 +76,36 @@ class _MainState extends State<Main> {
     );
   }
 
+  Widget _watchGameInstance(
+      T Function<T>(ProviderBase<Object, T>) watch, BuildContext context) {
+    return watch(gameController.state).when(
+      data: (data) {
+        if (data == null) {
+          return MainMenuPage(
+            key: Key("MainMenuPageKey"),
+            delayInitAnimations: !wasAlreadyLoggedIn,
+          );
+        }
+        return Center(
+          child: Text("NOMC GIERKA"),
+        );
+      },
+      loading: () {
+        return Center(
+          child: WANDProgressIndicator(
+            type: WANDProgressIndicatorType.fullscreen,
+            size: 100,
+          ),
+        );
+      },
+      error: (error, stackTrace) {
+        return Center(
+          child: Text("Error"),
+        );
+      },
+    );
+  }
+
   Widget _watchAuthState(
       T Function<T>(ProviderBase<Object, T>) watch, BuildContext context) {
     return watch(firebaseAuthController.state).when(
@@ -85,10 +115,7 @@ class _MainState extends State<Main> {
           wasAlreadyLoggedIn = false;
           return _watchLandingPageVisiblity(watch, context);
         } else {
-          return MainMenuPage(
-            key: Key("MainMenuPageKey"),
-            delayInitAnimations: !wasAlreadyLoggedIn,
-          );
+          return _watchGameInstance(watch, context);
         }
       },
       loading: () {
