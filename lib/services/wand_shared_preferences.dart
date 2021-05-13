@@ -12,8 +12,14 @@ final wandSharedPreferencesProvider = Provider<WANDSharedPreferences>(
 class WANDSharedPreferences {
   SharedPreferences sp;
   String landingPageSeenKey = "WAND_LANDING_PAGE_SEEN";
+  String gameIdKey = "WAND_GAME_ID";
 
   bool get isUninitialized => sp == null ? true : false;
+
+  void checkInitialization() {
+    if (isUninitialized)
+      throw new Exception("Shared Preferences not initialized!");
+  }
 
   Future<void> _init() async {
     sp = await SharedPreferences.getInstance();
@@ -27,17 +33,28 @@ class WANDSharedPreferences {
   }
 
   bool getLandingPageSeen() {
-    if (isUninitialized)
-      throw new Exception("Shared Preferences not initialized!");
+    checkInitialization();
     final result = sp.getBool(landingPageSeenKey);
     if (result != null) return result;
     return false;
   }
 
   Future<void> setLandingPageSeen() async {
-    if (isUninitialized)
-      throw new Exception("Shared Preferences not initialized!");
+    checkInitialization();
     await sp.setBool(landingPageSeenKey, true);
     return;
+  }
+
+  Future<void> setGameId(gameId) async {
+    checkInitialization();
+    await sp.setString(gameIdKey, gameId);
+    return;
+  }
+
+  String getGameId() {
+    checkInitialization();
+    final result = sp.getString(gameIdKey);
+    if (result != null && result != "") return result;
+    return "";
   }
 }

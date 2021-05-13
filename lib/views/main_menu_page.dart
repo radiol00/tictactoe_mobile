@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:math';
 
 import 'package:animations/animations.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_keyboard_visibility/flutter_keyboard_visibility.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -44,7 +45,7 @@ class _MainMenuPageState extends State<MainMenuPage>
   Animation _animationProfileButton;
   CurvedAnimation _animationMenuButtonsCurve;
   WANDgRPCConnection grpc;
-  Function(String) joinGame;
+  Future<void> Function(String) joinGame;
 
   CurvedAnimation _animationProfileButtonCurve;
   int menuButtonId = 0;
@@ -345,8 +346,15 @@ class _MainMenuPageState extends State<MainMenuPage>
         proto.Game game = await stream.first;
         grpc.leaveMatchmaking();
         Navigator.of(context).pop();
-        joinGame(game.id);
-        return;
+        try {
+          await joinGame(game.id);
+        } catch (e) {
+          if (e is FirebaseException) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              buildSnackBar(context, "Problem with connection"),
+            );
+          }
+        }
       }
     } catch (e) {
       if (e is GrpcError && e.code == 1) {

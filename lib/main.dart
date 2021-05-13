@@ -7,6 +7,7 @@ import 'package:wand_tictactoe/providers/firebase_auth_provider.dart';
 import 'package:wand_tictactoe/providers/game_controller_provider.dart';
 import 'package:wand_tictactoe/providers/landing_page_visibility_provider.dart';
 import 'package:wand_tictactoe/views/auth_page.dart';
+import 'package:wand_tictactoe/views/game_page.dart';
 import 'package:wand_tictactoe/views/landing_page.dart';
 import 'package:wand_tictactoe/views/main_menu_page.dart';
 import 'package:wand_tictactoe/widgets/wand_progress_indicator.dart';
@@ -85,10 +86,11 @@ class _MainState extends State<Main> {
             key: Key("MainMenuPageKey"),
             delayInitAnimations: !wasAlreadyLoggedIn,
           );
+        } else {
+          return GamePage(
+            gameId: data.id,
+          );
         }
-        return Center(
-          child: Text("NOMC GIERKA"),
-        );
       },
       loading: () {
         return Center(

@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:wand_tictactoe/providers/game_controller_provider.dart';
 
 class GamePage extends StatefulWidget {
   GamePage({this.gameId});
@@ -13,8 +15,11 @@ class _GamePageState extends State<GamePage> {
     return Scaffold(
       backgroundColor: Colors.white,
       body: Center(
-        child: Text(
-          "${widget.gameId}",
+        child: ElevatedButton(
+          onPressed: () {
+            context.read(gameController).leaveGame();
+          },
+          child: Text('Leave game'),
         ),
       ),
     );

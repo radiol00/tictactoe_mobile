@@ -11,4 +11,10 @@ class WANDFirebaseConnection {
 
   FirebaseAuth get auth => _auth;
   FirebaseFirestore get store => _store;
+
+  DocumentReference getGameDoc(String gameId) {
+    CollectionReference gameCollection = _store.collection("games");
+    DocumentReference gameDoc = gameCollection.doc(gameId);
+    return gameDoc;
+  }
 }
