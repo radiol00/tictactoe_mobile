@@ -1,17 +1,15 @@
-import 'dart:async';
-
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_keyboard_visibility/flutter_keyboard_visibility.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:wand_tictactoe/main.dart';
-import 'package:wand_tictactoe/models/ttt_user.dart';
 import 'package:wand_tictactoe/providers/firebase_auth_provider.dart';
+import 'package:wand_tictactoe/providers/game_controller_provider.dart';
 import 'package:wand_tictactoe/providers/landing_page_visibility_provider.dart';
 import 'package:wand_tictactoe/views/auth_page.dart';
-
-import 'landing_page_test.dart';
+import 'mock_firebase_auth.dart';
+import 'mock_game_controller.dart';
+import 'mock_landingpage_visibility.dart';
 
 void main() {
   Widget makeWidgetTestable(Widget child) {
@@ -434,6 +432,9 @@ void main() {
           landingPageVisibilityController.overrideWithValue(
             MockLandingPageVisibilityNotifier(done: true),
           ),
+          gameController.overrideWithValue(
+            MockGameNotifier(),
+          ),
         ],
       ),
     );
@@ -517,6 +518,9 @@ void main() {
           ),
           landingPageVisibilityController.overrideWithValue(
             MockLandingPageVisibilityNotifier(done: true),
+          ),
+          gameController.overrideWithValue(
+            MockGameNotifier(),
           ),
         ],
       ),
@@ -615,56 +619,4 @@ void main() {
     expect(mainMenuPageFinder, findsNothing);
     expect(snackBarFinder, findsOneWidget);
   });
-}
-
-enum MockFirebaseAuthNotifierMode {
-  noInteraction,
-  successfulInteraction,
-  failedInteraction
-}
-
-class MockFirebaseAuthNotifier extends FirebaseAuthNotifier {
-  MockFirebaseAuthNotifier(MockFirebaseAuthNotifierMode mode) : super(null) {
-    _mode = mode;
-  }
-
-  MockFirebaseAuthNotifierMode _mode;
-
-  @override
-  void init() async {
-    state = AsyncValue.data(null);
-  }
-
-  @override
-  Future<void> registerWithEmailAndPasswd(
-      String email, String passwd, String username) async {
-    switch (_mode) {
-      case MockFirebaseAuthNotifierMode.noInteraction:
-        return;
-      case MockFirebaseAuthNotifierMode.successfulInteraction:
-        state = AsyncValue.data(TTTUser());
-        return;
-      case MockFirebaseAuthNotifierMode.failedInteraction:
-        throw new FirebaseAuthException(code: "test", message: "test message");
-        return;
-    }
-  }
-
-  Stream<String> get userDisplayNameStream {
-    return Stream.value("test");
-  }
-
-  @override
-  Future<void> loginWithEmailAndPasswd(String email, String passwd) async {
-    switch (_mode) {
-      case MockFirebaseAuthNotifierMode.noInteraction:
-        return;
-      case MockFirebaseAuthNotifierMode.successfulInteraction:
-        state = AsyncValue.data(TTTUser());
-        return;
-      case MockFirebaseAuthNotifierMode.failedInteraction:
-        throw new FirebaseAuthException(code: "test", message: "test message");
-        return;
-    }
-  }
 }

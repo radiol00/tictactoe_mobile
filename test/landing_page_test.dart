@@ -7,7 +7,8 @@ import 'package:wand_tictactoe/providers/landing_page_visibility_provider.dart';
 import 'package:wand_tictactoe/services/wand_shared_preferences.dart';
 import 'package:wand_tictactoe/views/landing_page.dart';
 
-import 'auth_page_test.dart';
+import 'mock_firebase_auth.dart';
+import 'mock_landingpage_visibility.dart';
 
 void main() {
   Widget makeWidgetTestable(Widget child) {
@@ -60,22 +61,4 @@ void main() {
 
     expect(signInFinder, findsOneWidget);
   });
-}
-
-class MockLandingPageVisibilityNotifier extends LandingPageVisibilityNotifier {
-  MockLandingPageVisibilityNotifier({this.done})
-      : super(WANDSharedPreferences());
-
-  bool done;
-
-  @override
-  void init() {
-    state = AsyncValue.data(done);
-    return;
-  }
-
-  @override
-  void seen() {
-    return;
-  }
 }
