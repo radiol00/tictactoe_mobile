@@ -44,10 +44,11 @@ class _AuthPageState extends State<AuthPage>
   @override
   void initState() {
     super.initState();
-    registerWithEmailAndPasswd =
-        context.read(firebaseAuthController).registerWithEmailAndPasswd;
+    registerWithEmailAndPasswd = context
+        .read(firebaseAuthController.notifier)
+        .registerWithEmailAndPasswd;
     loginWithEmailAndPasswd =
-        context.read(firebaseAuthController).loginWithEmailAndPasswd;
+        context.read(firebaseAuthController.notifier).loginWithEmailAndPasswd;
     if (widget.initialMode != null) mode = widget.initialMode;
     if (mode == AuthPageMode.login) showConfirmPasswordInput = false;
 

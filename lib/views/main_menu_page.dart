@@ -89,7 +89,7 @@ class _MainMenuPageState extends State<MainMenuPage>
   @override
   void initState() {
     super.initState();
-    joinGame = context.read(gameController).joinGame;
+    joinGame = context.read(gameController.notifier).joinGame;
     grpc = context.read(grpcProvider);
 
     _scrollController = ScrollController();
@@ -97,7 +97,7 @@ class _MainMenuPageState extends State<MainMenuPage>
     randomizeProtip();
     runProtipAnimationTimer();
     userDisplayNameStream =
-        context.read(firebaseAuthController).userDisplayNameStream;
+        context.read(firebaseAuthController.notifier).userDisplayNameStream;
     _animationController = AnimationController(
       vsync: this,
       duration: Duration(seconds: 1),

@@ -16,7 +16,8 @@ class _LandingPageState extends State<LandingPage> {
   void initState() {
     super.initState();
     _controller = PageController(initialPage: 0);
-    landingPageSeen = context.read(landingPageVisibilityController).seen;
+    landingPageSeen =
+        context.read(landingPageVisibilityController.notifier).seen;
   }
 
   @override

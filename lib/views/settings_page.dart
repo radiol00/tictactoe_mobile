@@ -15,7 +15,7 @@ class _SettingsPageState extends State<SettingsPage> {
   void initState() {
     super.initState();
 
-    logout = context.read(firebaseAuthController).logout;
+    logout = context.read(firebaseAuthController.notifier).logout;
   }
 
   @override

@@ -39,7 +39,7 @@ class WANDgRPCConnection {
 
   Stream<proto.Game> joinMatchmaking() {
     if (_listening) return null;
-    var tttuser = _ref.read(firebaseAuthController.state).data.value;
+    var tttuser = _ref.read(firebaseAuthController).data.value;
     if (tttuser == null) return null;
     _stream = _client.joinMatchmaking(
       proto.User(

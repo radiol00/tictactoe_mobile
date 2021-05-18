@@ -2,8 +2,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:wand_tictactoe/services/wand_shared_preferences.dart';
 
 // CONTROLLER
-final landingPageVisibilityController =
-    StateNotifierProvider.autoDispose<LandingPageVisibilityNotifier>(
+final landingPageVisibilityController = StateNotifierProvider.autoDispose<
+    LandingPageVisibilityNotifier, AsyncValue<bool>>(
   (ref) =>
       LandingPageVisibilityNotifier(ref.read(wandSharedPreferencesProvider)),
 );

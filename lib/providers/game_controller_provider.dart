@@ -4,7 +4,8 @@ import 'package:wand_tictactoe/models/game_state.dart';
 import 'package:wand_tictactoe/services/wand_firebase_connection.dart';
 import 'package:wand_tictactoe/services/wand_shared_preferences.dart';
 
-final gameController = StateNotifierProvider.autoDispose<GameNotifier>(
+final gameController =
+    StateNotifierProvider.autoDispose<GameNotifier, AsyncValue<GameState>>(
   (ref) => GameNotifier(
     ref.read(wandFirebaseConnection),
     ref.read(wandSharedPreferencesProvider),

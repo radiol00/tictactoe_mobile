@@ -17,7 +17,7 @@ class _GamePageState extends State<GamePage> {
       body: Center(
         child: ElevatedButton(
           onPressed: () {
-            context.read(gameController).leaveGame();
+            context.read(gameController.notifier).leaveGame();
           },
           child: Text('Leave game'),
         ),

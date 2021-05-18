@@ -52,7 +52,7 @@ class _MainState extends State<Main> {
 
   Widget _watchLandingPageVisiblity(
       T Function<T>(ProviderBase<Object, T>) watch, BuildContext context) {
-    return watch(landingPageVisibilityController.state).when(
+    return watch(landingPageVisibilityController).when(
       data: (bool landingPageDone) {
         if (landingPageDone)
           return AuthPage(
@@ -79,7 +79,7 @@ class _MainState extends State<Main> {
 
   Widget _watchGameInstance(
       T Function<T>(ProviderBase<Object, T>) watch, BuildContext context) {
-    return watch(gameController.state).when(
+    return watch(gameController).when(
       data: (data) {
         if (data == null) {
           return MainMenuPage(
@@ -110,7 +110,7 @@ class _MainState extends State<Main> {
 
   Widget _watchAuthState(
       T Function<T>(ProviderBase<Object, T>) watch, BuildContext context) {
-    return watch(firebaseAuthController.state).when(
+    return watch(firebaseAuthController).when(
       data: (TTTUser user) {
         shouldUseAnimatedSwitcher = true;
         if (user == null) {
