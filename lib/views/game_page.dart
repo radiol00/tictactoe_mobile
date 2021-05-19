@@ -268,7 +268,13 @@ class _GamePageState extends State<GamePage> {
     return AspectRatio(
       aspectRatio: 1,
       child: Container(
-        color: Colors.black,
+        decoration: ShapeDecoration(
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(
+                MediaQuery.of(context).size.width * 1.5,
+              ),
+            ),
+            color: Colors.black),
         child: GridView.count(
           crossAxisSpacing: 5,
           mainAxisSpacing: 5,
