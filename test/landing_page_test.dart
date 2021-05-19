@@ -4,7 +4,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:wand_tictactoe/providers/firebase_auth_provider.dart';
 import 'package:wand_tictactoe/providers/landing_page_visibility_provider.dart';
-import 'package:wand_tictactoe/services/wand_shared_preferences.dart';
 import 'package:wand_tictactoe/views/landing_page.dart';
 
 import 'mock_firebase_auth.dart';

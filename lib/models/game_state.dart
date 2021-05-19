@@ -1,18 +1,30 @@
+import 'package:wand_tictactoe/models/player.dart';
+
 class GameState {
   String id;
-  List<List<int>> board;
-  String player = "X";
-  String enemy = "O";
+  List<List<Figure>> board;
+  Player enemyInfo;
+  Figure playerFigure;
+  Figure enemyFigure;
+  Turn turn;
 
-  // 0 - CLEAN FIELD
-  // 1 - O
-  // 2 - X
+  GameState(Figure fig) {
+    if (fig == Figure.X) {
+      playerFigure = Figure.X;
+      turn = Turn.PLAYER;
+    } else {
+      playerFigure = Figure.O;
+      turn = Turn.ENEMY;
+    }
 
-  GameState() {
     board = [
-      [0, 0, 0],
-      [0, 0, 0],
-      [0, 0, 0],
+      [Figure.BLANK, Figure.BLANK, Figure.BLANK],
+      [Figure.BLANK, Figure.BLANK, Figure.BLANK],
+      [Figure.BLANK, Figure.BLANK, Figure.BLANK],
     ];
   }
 }
+
+enum Turn { ENEMY, PLAYER }
+
+enum Figure { BLANK, X, O }

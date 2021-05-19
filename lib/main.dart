@@ -88,7 +88,7 @@ class _MainState extends State<Main> {
           );
         } else {
           return GamePage(
-            gameId: data.id,
+            gameState: data,
           );
         }
       },

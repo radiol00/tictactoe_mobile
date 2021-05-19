@@ -12,7 +12,6 @@ import 'package:wand_tictactoe/providers/game_controller_provider.dart';
 import 'package:wand_tictactoe/providers/grpc_provider.dart';
 import 'package:wand_tictactoe/providers/protip_provider.dart';
 import 'package:wand_tictactoe/views/credits_page.dart';
-import 'package:wand_tictactoe/views/game_page.dart';
 import 'package:wand_tictactoe/views/settings_page.dart';
 import 'package:wand_tictactoe/widgets/wand_progress_indicator.dart';
 

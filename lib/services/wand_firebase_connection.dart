@@ -17,4 +17,9 @@ class WANDFirebaseConnection {
     DocumentReference gameDoc = gameCollection.doc(gameId);
     return gameDoc;
   }
+
+  Future<String> getPlayerName(String userId) async {
+    var doc = await _store.collection("users").doc(userId).get();
+    return doc["displayName"];
+  }
 }
