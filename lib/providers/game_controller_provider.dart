@@ -33,7 +33,11 @@ class GameNotifier extends StateNotifier<AsyncValue<GameState>> {
     // gameState.enemyFigure = Figure.O;
     // gameState.playerFigure = Figure.X;
     // gameState.turn = Turn.PLAYER;
-    // gameState.enemyInfo = Player()..displayName = "ENEMY";
+    // gameState.enemyInfo = Player()
+    //   ..displayName = "ENEMY"
+    //   ..draws = 0
+    //   ..wins = 3
+    //   ..loses = 2;
     // refreshState();
     // return;
     // ----------------------

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:wand_tictactoe/models/game_state.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:wand_tictactoe/models/player.dart';
 import 'package:wand_tictactoe/providers/firebase_auth_provider.dart';
 import 'package:wand_tictactoe/providers/game_controller_provider.dart';
 
@@ -16,7 +17,7 @@ class _GamePageState extends State<GamePage> {
   Future<void> Function(int, int) placeFigure;
   void Function() leaveGame;
   String playerName = "";
-  String enemyName = "";
+  Player enemyInfo;
 
   @override
   void initState() {
@@ -29,14 +30,21 @@ class _GamePageState extends State<GamePage> {
         .firebaseUserObject
         .displayName;
 
-    enemyName = widget.gameState.enemyInfo.displayName;
+    enemyInfo = widget.gameState.enemyInfo;
   }
 
   Widget _buildEnemyInfo() {
     Figure enemyFigure = widget.gameState.enemyFigure;
-    Widget enemyFigureWidget = Text("O");
+    Widget enemyFigureWidget = Text(
+      "O",
+      textScaleFactor: 1.3,
+    );
 
-    if (enemyFigure == Figure.X) enemyFigureWidget = Text("X");
+    if (enemyFigure == Figure.X)
+      enemyFigureWidget = Text(
+        "X",
+        textScaleFactor: 1.3,
+      );
 
     return Expanded(
       child: Column(
@@ -44,13 +52,16 @@ class _GamePageState extends State<GamePage> {
           Column(
             children: [
               Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
-                    "$enemyName",
+                    "${enemyInfo.displayName}",
+                    textScaleFactor: 1.8,
                   ),
                   Text(
-                    "ENEMY RECORD",
+                    "${enemyInfo.wins} - ${enemyInfo.draws} - ${enemyInfo.loses}",
+                    textScaleFactor: 1.3,
                   ),
                 ],
               ),
@@ -68,9 +79,13 @@ class _GamePageState extends State<GamePage> {
 
   Widget _buildPlayerInfo() {
     Figure playerFigure = widget.gameState.playerFigure;
-    Widget playerFigureWidget = Text("O");
+    Widget playerFigureWidget = Text(
+      "O",
+      textScaleFactor: 1.3,
+    );
 
-    if (playerFigure == Figure.X) playerFigureWidget = Text("X");
+    if (playerFigure == Figure.X)
+      playerFigureWidget = Text("X", textScaleFactor: 1.3);
 
     return Expanded(
       child: Column(
@@ -84,7 +99,10 @@ class _GamePageState extends State<GamePage> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   playerFigureWidget,
-                  Text("$playerName"),
+                  Text(
+                    "$playerName",
+                    textScaleFactor: 1.8,
+                  ),
                 ],
               ),
               Column(

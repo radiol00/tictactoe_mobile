@@ -18,8 +18,9 @@ class WANDFirebaseConnection {
     return gameDoc;
   }
 
-  Future<String> getPlayerName(String userId) async {
+  Future<DocumentSnapshot<Map<String, dynamic>>> getPlayerDoc(
+      String userId) async {
     var doc = await _store.collection("users").doc(userId).get();
-    return doc["displayName"];
+    return doc;
   }
 }
