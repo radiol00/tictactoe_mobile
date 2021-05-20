@@ -28,16 +28,6 @@ class MainMenuPage extends StatefulWidget {
 
 class _MainMenuPageState extends State<MainMenuPage>
     with TickerProviderStateMixin {
-  Image logoImage = Image.asset(
-    "assets/credits.png",
-  );
-
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    precacheImage(logoImage.image, context);
-  }
-
   ScrollController _scrollController;
   AnimationController _animationController;
   Animation _animationMenuButtons;
@@ -264,16 +254,14 @@ class _MainMenuPageState extends State<MainMenuPage>
                 splashColor: Colors.black.withOpacity(0.1),
                 onTap: () {
                   Navigator.of(context).push(MaterialPageRoute(
-                    builder: (context) => CreditsPage(
-                      precachedLogo: logoImage,
-                    ),
+                    builder: (context) => CreditsPage(),
                   ));
                 },
                 child: SizedBox(
                   height: 50,
                   child: Hero(
                     tag: "Credits_WAND_logo",
-                    child: logoImage,
+                    child: Image.asset("assets/credits.png"),
                   ),
                 ),
               ),

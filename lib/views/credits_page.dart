@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 
 class CreditsPage extends StatefulWidget {
-  CreditsPage({@required this.precachedLogo});
-  final Image precachedLogo;
+  CreditsPage();
   @override
   _CreditsPageState createState() => _CreditsPageState();
 }
@@ -31,7 +30,7 @@ class _CreditsPageState extends State<CreditsPage> {
                         : null,
                     child: Hero(
                       tag: "Credits_WAND_logo",
-                      child: widget.precachedLogo,
+                      child: Image.asset("assets/credits.png"),
                     ),
                   ),
                   Text(

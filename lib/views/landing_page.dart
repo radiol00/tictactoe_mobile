@@ -20,6 +20,14 @@ class _LandingPageState extends State<LandingPage> {
         context.read(landingPageVisibilityController.notifier).seen;
   }
 
+  void didChangeDependencies() async {
+    super.didChangeDependencies();
+    await precacheImage(Image.asset("assets/title_screen.png").image, context);
+    await precacheImage(Image.asset("assets/domination.gif").image, context);
+    await precacheImage(Image.asset("assets/friends.gif").image, context);
+    await precacheImage(Image.asset("assets/ready.gif").image, context);
+  }
+
   @override
   Widget build(BuildContext context) {
     return SafeArea(

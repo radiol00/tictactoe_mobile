@@ -47,6 +47,13 @@ class Main extends StatefulWidget {
 }
 
 class _MainState extends State<Main> {
+  @override
+  void didChangeDependencies() async {
+    super.didChangeDependencies();
+    await precacheImage(Image.asset("assets/credits.png").image, context);
+    await precacheImage(Image.asset("assets/mm_background.png").image, context);
+  }
+
   bool wasAlreadyLoggedIn = true;
   bool shouldUseAnimatedSwitcher = false;
 
@@ -139,70 +146,71 @@ class _MainState extends State<Main> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-        // builder: DevicePreview.appBuilder,
-        title: 'Tic-Tac-Toe Mobile',
-        theme: ThemeData(
-          canvasColor: Colors.white,
-          primaryColor: Colors.black,
-          textButtonTheme: TextButtonThemeData(
-            style: ButtonStyle(
-              backgroundColor: MaterialStateProperty.all<Color>(Colors.white),
-              foregroundColor: MaterialStateProperty.all<Color>(Colors.black),
-              overlayColor: MaterialStateProperty.all<Color>(
-                  Colors.black.withOpacity(0.1)),
-            ),
+      // builder: DevicePreview.appBuilder,
+      title: 'Tic-Tac-Toe Mobile',
+      theme: ThemeData(
+        canvasColor: Colors.white,
+        primaryColor: Colors.black,
+        textButtonTheme: TextButtonThemeData(
+          style: ButtonStyle(
+            backgroundColor: MaterialStateProperty.all<Color>(Colors.white),
+            foregroundColor: MaterialStateProperty.all<Color>(Colors.black),
+            overlayColor:
+                MaterialStateProperty.all<Color>(Colors.black.withOpacity(0.1)),
           ),
-          elevatedButtonTheme: ElevatedButtonThemeData(
-            style: ButtonStyle(
-              backgroundColor: MaterialStateProperty.all<Color>(Colors.black),
-              foregroundColor: MaterialStateProperty.all<Color>(Colors.white),
-              overlayColor: MaterialStateProperty.all<Color>(
-                  Colors.white.withOpacity(0.1)),
-              shape: MaterialStateProperty.all(
-                ContinuousRectangleBorder(
-                  borderRadius: BorderRadius.circular(50.0),
-                ),
-              ),
-            ),
-          ),
-          outlinedButtonTheme: OutlinedButtonThemeData(
-            style: ButtonStyle(
-              elevation: MaterialStateProperty.all<double>(10.0),
-              overlayColor: MaterialStateProperty.all<Color>(
-                  Colors.black.withOpacity(0.1)),
-              backgroundColor: MaterialStateProperty.all<Color>(Colors.white),
-              foregroundColor: MaterialStateProperty.all<Color>(Colors.black),
-              side: MaterialStateProperty.all<BorderSide>(
-                BorderSide(
-                    width: 2, color: Colors.black, style: BorderStyle.solid),
+        ),
+        elevatedButtonTheme: ElevatedButtonThemeData(
+          style: ButtonStyle(
+            backgroundColor: MaterialStateProperty.all<Color>(Colors.black),
+            foregroundColor: MaterialStateProperty.all<Color>(Colors.white),
+            overlayColor:
+                MaterialStateProperty.all<Color>(Colors.white.withOpacity(0.1)),
+            shape: MaterialStateProperty.all(
+              ContinuousRectangleBorder(
+                borderRadius: BorderRadius.circular(50.0),
               ),
             ),
           ),
         ),
-        home: Scaffold(
-          body: Consumer(
-            builder: (context, watch, _) {
-              if (shouldUseAnimatedSwitcher) {
-                return AnimatedSwitcher(
-                  switchInCurve: Curves.easeOut,
-                  switchOutCurve: Curves.easeIn,
-                  transitionBuilder: (child, animation) {
-                    return ScaleTransition(
-                      child: FadeTransition(
-                        child: child,
-                        opacity: animation,
-                      ),
-                      scale: animation,
-                    );
-                  },
-                  duration: Duration(seconds: 1),
-                  child: _watchAuthState(watch, context),
-                );
-              } else {
-                return _watchAuthState(watch, context);
-              }
-            },
+        outlinedButtonTheme: OutlinedButtonThemeData(
+          style: ButtonStyle(
+            elevation: MaterialStateProperty.all<double>(10.0),
+            overlayColor:
+                MaterialStateProperty.all<Color>(Colors.black.withOpacity(0.1)),
+            backgroundColor: MaterialStateProperty.all<Color>(Colors.white),
+            foregroundColor: MaterialStateProperty.all<Color>(Colors.black),
+            side: MaterialStateProperty.all<BorderSide>(
+              BorderSide(
+                  width: 2, color: Colors.black, style: BorderStyle.solid),
+            ),
           ),
-        ));
+        ),
+      ),
+      home: Scaffold(
+        body: Consumer(
+          builder: (context, watch, _) {
+            if (shouldUseAnimatedSwitcher) {
+              return AnimatedSwitcher(
+                switchInCurve: Curves.easeOut,
+                switchOutCurve: Curves.easeIn,
+                transitionBuilder: (child, animation) {
+                  return ScaleTransition(
+                    child: FadeTransition(
+                      child: child,
+                      opacity: animation,
+                    ),
+                    scale: animation,
+                  );
+                },
+                duration: Duration(seconds: 1),
+                child: _watchAuthState(watch, context),
+              );
+            } else {
+              return _watchAuthState(watch, context);
+            }
+          },
+        ),
+      ),
+    );
   }
 }
