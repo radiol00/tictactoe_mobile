@@ -12,6 +12,7 @@ import 'package:wand_tictactoe/providers/game_controller_provider.dart';
 import 'package:wand_tictactoe/providers/grpc_provider.dart';
 import 'package:wand_tictactoe/providers/protip_provider.dart';
 import 'package:wand_tictactoe/views/credits_page.dart';
+import 'package:wand_tictactoe/views/profile_page.dart';
 import 'package:wand_tictactoe/views/settings_page.dart';
 import 'package:wand_tictactoe/widgets/wand_progress_indicator.dart';
 
@@ -42,6 +43,7 @@ class _MainMenuPageState extends State<MainMenuPage>
   bool menuItemsVisible = false;
   Protip protip;
   Timer protipTimer;
+  String userId;
 
   Stream<String> userDisplayNameStream;
 
@@ -80,6 +82,7 @@ class _MainMenuPageState extends State<MainMenuPage>
     super.initState();
     joinGame = context.read(gameController.notifier).joinGame;
     grpc = context.read(grpcProvider);
+    userId = context.read(firebaseAuthController.notifier).uid;
 
     _scrollController = ScrollController();
 
@@ -204,7 +207,22 @@ class _MainMenuPageState extends State<MainMenuPage>
               style: ButtonStyle(
                   backgroundColor:
                       MaterialStateProperty.all<Color>(Colors.transparent)),
-              onPressed: () {},
+              onPressed: () {
+                Navigator.of(context).push(
+                  PageRouteBuilder(
+                    opaque: false,
+                    pageBuilder: (context, animation, secondaryAnimation) =>
+                        ProfilePage(userId: userId),
+                    transitionsBuilder:
+                        (context, animation, secondaryAnimation, child) {
+                      return FadeTransition(
+                        opacity: animation,
+                        child: child,
+                      );
+                    },
+                  ),
+                );
+              },
               child: Row(
                 children: [
                   Icon(

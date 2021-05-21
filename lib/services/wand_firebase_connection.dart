@@ -20,7 +20,13 @@ class WANDFirebaseConnection {
 
   Future<DocumentSnapshot<Map<String, dynamic>>> getPlayerDoc(
       String userId) async {
-    var doc = await _store.collection("users").doc(userId).get();
+    var doc = await _store.collection("users").doc(userId).get().then((value) {
+      if (value.exists)
+        return value;
+      else
+        throw FirebaseException(plugin: "firestore");
+    });
+
     return doc;
   }
 }

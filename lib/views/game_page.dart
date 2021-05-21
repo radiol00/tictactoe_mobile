@@ -194,7 +194,7 @@ class _GamePageState extends State<GamePage> {
                                             Navigator.of(context).pop();
                                           },
                                           child: Icon(
-                                            Icons.chevron_left,
+                                            Icons.chevron_left_rounded,
                                             size: 35,
                                           ),
                                         ),

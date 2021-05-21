@@ -42,6 +42,13 @@ class FirebaseAuthNotifier extends StateNotifier<AsyncValue<TTTUser>> {
     return userChanges.transform(displayNameStreamDecapsulation);
   }
 
+  String get uid {
+    if (localUser != null)
+      return localUser.firebaseUserObject.uid;
+    else
+      return "";
+  }
+
   Future<void> registerWithEmailAndPasswd(
       String email, String passwd, String username) async {
     username = username.trim();
@@ -55,6 +62,8 @@ class FirebaseAuthNotifier extends StateNotifier<AsyncValue<TTTUser>> {
       "wins": 0,
       "loses": 0,
       "draws": 0,
+      "currentWinStreak": 0,
+      "maxWinStreak": 0,
     });
   }
 
