@@ -305,15 +305,14 @@ class _ProfilePageState extends State<ProfilePage> {
             }
 
             return AnimatedSwitcher(
-              switchInCurve: Curves.easeOut,
-              switchOutCurve: Curves.easeIn,
+              switchInCurve: Curves.easeInOut,
               transitionBuilder: (child, animation) {
                 return FadeTransition(
                   child: child,
                   opacity: animation,
                 );
               },
-              duration: Duration(seconds: 1),
+              duration: Duration(milliseconds: 500),
               child: child,
             );
           },
