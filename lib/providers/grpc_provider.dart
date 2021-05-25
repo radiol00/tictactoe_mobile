@@ -12,7 +12,7 @@ class WANDgRPCConnection {
   ProviderReference _ref;
   ResponseStream _stream;
   bool _listening = false;
-  String _host = "192.168.0.100";
+  String _host = "192.168.158.29";
   int _port = 9999;
 
   WANDgRPCConnection(ref) {
@@ -37,7 +37,7 @@ class WANDgRPCConnection {
     _client = proto.TTTClient(_channel);
   }
 
-  Stream<proto.Game> joinMatchmaking() {
+  Stream<proto.Response> joinMatchmaking() {
     if (_listening) return null;
     var tttuser = _ref.read(firebaseAuthController).data.value;
     if (tttuser == null) return null;

@@ -319,6 +319,13 @@ class _MainMenuPageState extends State<MainMenuPage>
     );
   }
 
+  void popAndShowError(String err) {
+    Navigator.of(context).pop();
+    ScaffoldMessenger.of(context).showSnackBar(
+      buildSnackBar(context, err),
+    );
+  }
+
   void findMatch() async {
     showDialog(
       context: context,
@@ -326,45 +333,72 @@ class _MainMenuPageState extends State<MainMenuPage>
       builder: (context) => _buildMMDialog(),
     );
     grpc.dial();
-    Stream<proto.Game> stream = grpc.joinMatchmaking();
+    Stream<proto.Response> stream = grpc.joinMatchmaking();
+
+    // Error in getting stream, display error
     if (stream == null) {
-      Navigator.of(context).pop();
-      ScaffoldMessenger.of(context).showSnackBar(
-        buildSnackBar(context, "There was an error in match making"),
-      );
+      popAndShowError("There was an error in joining match making");
       return;
     }
 
-    // TIMEOUT TIMER
+    // TIMEOUT TIMER, display connection error
     var timer = Timer(Duration(seconds: 3), () {
       grpc.leaveMatchmaking();
-      Navigator.of(context).pop();
-      ScaffoldMessenger.of(context).showSnackBar(
-        buildSnackBar(context, "Problem with connection"),
-      );
+      popAndShowError("Problem with connection: timeout");
+      return;
     });
 
     try {
-      var connTester = await stream.first;
-      if (connTester.id == "") {
+      // await the first Response from stream (supposed to be HandShake)
+      var firstResponse = await stream.first;
+
+      // if it is HandShake, everything's OK
+      if (firstResponse.hasHandshake()) {
+        // Server is live because got HandShake, timeout timer can be canceled
         timer.cancel();
-        proto.Game game = await stream.first;
+
+        // awaiting the second Response (supposed to be Game object with its id)
+        proto.Response gameIDResponse = await stream.first;
+
+        // Got response, leave matchmaking.
         grpc.leaveMatchmaking();
         Navigator.of(context).pop();
-        try {
-          await joinGame(game.id);
-        } catch (e) {
-          if (e is FirebaseException) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              buildSnackBar(context, "Problem with connection"),
-            );
+
+        // if it is GameID, everything's OK
+        if (gameIDResponse.hasGameId()) {
+          // Join game that's under gameid
+          try {
+            await joinGame(gameIDResponse.gameId.id);
+          } catch (e) {
+            if (e is FirebaseException) {
+              print(e);
+              ScaffoldMessenger.of(context).showSnackBar(
+                buildSnackBar(context,
+                    "There was an error in match making: no such game"),
+              );
+              return;
+            }
           }
+        } else {
+          // not GameID, error!
+          grpc.leaveMatchmaking();
+          popAndShowError(
+              "There was an error in match making: invalid response GameID");
+          return;
         }
+      } else {
+        // Not HandShake error!
+        timer.cancel();
+        grpc.leaveMatchmaking();
+        popAndShowError(
+            "There was an error in match making: invalid response HandShake");
+        return;
       }
     } catch (e) {
       if (e is GrpcError && e.code == 1) {
         timer.cancel();
       } else {
+        timer.cancel();
         print(e);
       }
     }

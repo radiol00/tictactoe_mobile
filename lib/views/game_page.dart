@@ -15,6 +15,7 @@ class GamePage extends StatefulWidget {
 class _GamePageState extends State<GamePage> {
   String settingsHeroIconTag = "IN_GAME_SETTINGS";
   Future<void> Function(int, int) placeFigure;
+  Stream<Map<String, Figure>> boardStream;
   void Function() leaveGame;
   String playerName = "";
   Player enemyInfo;
@@ -31,6 +32,9 @@ class _GamePageState extends State<GamePage> {
         .displayName;
 
     enemyInfo = widget.gameState.enemyInfo;
+    boardStream = context
+        .read(gameController.notifier)
+        .getBoardStream(widget.gameState.id);
   }
 
   Widget _buildEnemyInfo() {
@@ -209,28 +213,6 @@ class _GamePageState extends State<GamePage> {
                       );
                     },
                   )
-                  // Hero(
-                  //   tag: settingsHeroIconTag,
-                  //   child: IconButton(
-                  //     splashRadius: Material.defaultSplashRadius - 10.0,
-                  //     icon: Icon(Icons.settings),
-                  //     iconSize: 35,
-                  //     onPressed: () {
-                  //       Navigator.of(context).push(
-                  //         PageRouteBuilder(
-                  //           opaque: false,
-                  //           pageBuilder:
-                  //               (context, animation, secondaryAnimation) {
-                  //             return Hero(
-                  //               tag: settingsHeroIconTag,
-                  //               child: Text("siema"),
-                  //             );
-                  //           },
-                  //         ),
-                  //       );
-                  //     },
-                  //   ),
-                  // ),
                 ],
               ),
             ],

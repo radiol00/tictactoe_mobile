@@ -29,4 +29,8 @@ class WANDFirebaseConnection {
 
     return doc;
   }
+
+  Stream<DocumentSnapshot<Map<String, dynamic>>> getGameStream(String gameId) {
+    return _store.collection("games").doc(gameId).snapshots();
+  }
 }

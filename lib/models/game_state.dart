@@ -8,12 +8,14 @@ class GameState {
   Figure enemyFigure;
   Turn turn;
 
-  GameState(Figure fig) {
-    if (fig == Figure.X) {
+  setFirstTurn(Turn firstTurn) {
+    if (firstTurn == Turn.PLAYER) {
       playerFigure = Figure.X;
+      enemyFigure = Figure.O;
       turn = Turn.PLAYER;
     } else {
       playerFigure = Figure.O;
+      enemyFigure = Figure.X;
       turn = Turn.ENEMY;
     }
 

@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:wand_tictactoe/models/game_state.dart';
@@ -25,22 +27,6 @@ class GameNotifier extends StateNotifier<AsyncValue<GameState>> {
   void init() async {
     await _prefs.ensureInitialized();
     String gameId = _prefs.getGameId();
-
-    // TODO: REMEMBER TO DELETE CODE BELOW
-    // ONLY FOR DEV PURPOSES, TO BE DELETED
-    // gameState = GameState(Figure.X);
-    // gameState.id = "123";
-    // gameState.enemyFigure = Figure.O;
-    // gameState.playerFigure = Figure.X;
-    // gameState.turn = Turn.PLAYER;
-    // gameState.enemyInfo = Player()
-    //   ..displayName = "ENEMY"
-    //   ..draws = 0
-    //   ..wins = 3
-    //   ..loses = 2;
-    // refreshState();
-    // return;
-    // ----------------------
 
     if (gameId == "") {
       state = AsyncValue.data(null);
@@ -71,16 +57,72 @@ class GameNotifier extends StateNotifier<AsyncValue<GameState>> {
     try {
       DocumentReference gameDoc = _connection.getGameDoc(gameId);
       DocumentSnapshot data = await gameDoc.get();
-      print(data);
       await _prefs.setGameId(gameId);
 
+      gameState = await prepareGameState(data);
       gameState.id = gameId;
       refreshState();
     } catch (e) {
       leaveGame();
+      print(e);
       throw new FirebaseException(plugin: 'FireStore');
     }
     // ELSE
+  }
+
+  Future<GameState> prepareGameState(DocumentSnapshot gameDoc) async {
+    GameState gs = GameState();
+    List<dynamic> gameUsers = gameDoc["users"];
+    String enemyUID;
+    Player enemy = Player();
+    String playerUID = _connection.auth.currentUser.uid;
+
+    // GET ENEMY UID
+    if (gameUsers[0] == playerUID) {
+      enemyUID = gameUsers[1];
+    } else {
+      enemyUID = gameUsers[0];
+    }
+
+    // GET ENEMY DOC + INFO
+    var enemyDoc = await _connection.getPlayerDoc(enemyUID);
+    enemy.displayName = enemyDoc["displayName"];
+    enemy.draws = enemyDoc["draws"];
+    enemy.loses = enemyDoc["loses"];
+    enemy.wins = enemyDoc["wins"];
+    gs.enemyInfo = enemy;
+
+    // SET FIRST TURN
+    if (gameDoc["turn"] == playerUID) {
+      gs.setFirstTurn(Turn.PLAYER);
+    } else {
+      gs.setFirstTurn(Turn.ENEMY);
+    }
+
+    return gs;
+  }
+
+  Stream<Map<String, Figure>> getBoardStream(String gameId) {
+    var gameStream = _connection.getGameStream(gameId);
+    StreamTransformer<DocumentSnapshot<Map<String, dynamic>>,
+            Map<String, Figure>> boardStreamDecapsulation =
+        StreamTransformer<DocumentSnapshot<Map<String, dynamic>>,
+            Map<String, Figure>>.fromHandlers(
+      handleData: (DocumentSnapshot<Map<String, dynamic>> data, sink) {
+        Map<String, dynamic> boardMap = data["board"];
+        Map<String, Figure> boardFigureMap = {};
+        boardMap.forEach((key, value) {
+          if (value == 1)
+            boardFigureMap[key] = Figure.X;
+          else if (value == 2)
+            boardFigureMap[key] = Figure.O;
+          else
+            boardFigureMap[key] = Figure.BLANK;
+        });
+        sink.add(boardFigureMap);
+      },
+    );
+    return gameStream.transform(boardStreamDecapsulation);
   }
 
   void leaveGame() async {
