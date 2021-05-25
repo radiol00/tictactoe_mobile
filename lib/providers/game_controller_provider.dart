@@ -46,6 +46,12 @@ class GameNotifier extends StateNotifier<AsyncValue<GameState>> {
     if (gameState.turn == Turn.PLAYER) {
       gameState.board[x][y] = gameState.playerFigure;
       gameState.turn = Turn.ENEMY;
+      DocumentReference gameDoc = _connection.getGameDoc(gameState.id);
+
+      gameDoc.update({
+        "board": {"$x$y", 3}
+      });
+
       refreshState();
     }
     return;
@@ -61,6 +67,11 @@ class GameNotifier extends StateNotifier<AsyncValue<GameState>> {
 
       gameState = await prepareGameState(data);
       gameState.id = gameId;
+      _connection.getGameStream(gameId).listen((event) {
+        print(event);
+        refreshState();
+      });
+
       refreshState();
     } catch (e) {
       leaveGame();
@@ -98,7 +109,6 @@ class GameNotifier extends StateNotifier<AsyncValue<GameState>> {
     } else {
       gs.setFirstTurn(Turn.ENEMY);
     }
-
     return gs;
   }
 

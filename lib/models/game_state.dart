@@ -3,6 +3,7 @@ import 'package:wand_tictactoe/models/player.dart';
 class GameState {
   String id;
   List<List<Figure>> board;
+  Stream<Map<String, Figure>> boardStream;
   Player enemyInfo;
   Figure playerFigure;
   Figure enemyFigure;
