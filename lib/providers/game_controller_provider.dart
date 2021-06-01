@@ -47,10 +47,10 @@ class GameNotifier extends StateNotifier<AsyncValue<GameState>> {
       gameState.board[x][y] = gameState.playerFigure;
       gameState.turn = Turn.ENEMY;
       DocumentReference gameDoc = _connection.getGameDoc(gameState.id);
-
-      gameDoc.update({
-        "board": {"$x$y", 3}
-      });
+      var doc = await gameDoc.get();
+      Map board = doc["board"];
+      board["$x$y"] = gameState.playerFigure == Figure.X ? 1 : 2;
+      gameDoc.update({"board": board, "turn": gameState.enemyInfo.uid});
 
       refreshState();
     }
@@ -67,8 +67,26 @@ class GameNotifier extends StateNotifier<AsyncValue<GameState>> {
 
       gameState = await prepareGameState(data);
       gameState.id = gameId;
+
+      // GAME STREAM!!!
       _connection.getGameStream(gameId).listen((event) {
-        print(event);
+        Map board = event.data()["board"];
+        String turn = event.data()["turn"];
+        for (var i = 0; i < 3; i++) {
+          for (var j = 0; j < 3; j++) {
+            Figure figure = Figure.BLANK;
+            int figureId = board["$i$j"];
+            if (figureId == 1) {
+              figure = Figure.X;
+            } else if (figureId == 2) {
+              figure = Figure.O;
+            }
+            gameState.board[i][j] = figure;
+          }
+        }
+        if (turn == _connection.auth.currentUser.uid) {
+          gameState.turn = Turn.PLAYER;
+        }
         refreshState();
       });
 
@@ -96,11 +114,18 @@ class GameNotifier extends StateNotifier<AsyncValue<GameState>> {
     }
 
     // GET ENEMY DOC + INFO
+    // TODO: UNCOMMENT CODE BELOW
     var enemyDoc = await _connection.getPlayerDoc(enemyUID);
+    enemy.uid = enemyUID;
     enemy.displayName = enemyDoc["displayName"];
     enemy.draws = enemyDoc["draws"];
     enemy.loses = enemyDoc["loses"];
     enemy.wins = enemyDoc["wins"];
+    // enemy.uid = "asd";
+    // enemy.displayName = "ENEMY";
+    // enemy.draws = 1;
+    // enemy.loses = 2;
+    // enemy.wins = 3;
     gs.enemyInfo = enemy;
 
     // SET FIRST TURN
@@ -110,29 +135,6 @@ class GameNotifier extends StateNotifier<AsyncValue<GameState>> {
       gs.setFirstTurn(Turn.ENEMY);
     }
     return gs;
-  }
-
-  Stream<Map<String, Figure>> getBoardStream(String gameId) {
-    var gameStream = _connection.getGameStream(gameId);
-    StreamTransformer<DocumentSnapshot<Map<String, dynamic>>,
-            Map<String, Figure>> boardStreamDecapsulation =
-        StreamTransformer<DocumentSnapshot<Map<String, dynamic>>,
-            Map<String, Figure>>.fromHandlers(
-      handleData: (DocumentSnapshot<Map<String, dynamic>> data, sink) {
-        Map<String, dynamic> boardMap = data["board"];
-        Map<String, Figure> boardFigureMap = {};
-        boardMap.forEach((key, value) {
-          if (value == 1)
-            boardFigureMap[key] = Figure.X;
-          else if (value == 2)
-            boardFigureMap[key] = Figure.O;
-          else
-            boardFigureMap[key] = Figure.BLANK;
-        });
-        sink.add(boardFigureMap);
-      },
-    );
-    return gameStream.transform(boardStreamDecapsulation);
   }
 
   void leaveGame() async {
