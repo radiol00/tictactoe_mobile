@@ -236,7 +236,7 @@ class _MainMenuPageState extends State<MainMenuPage>
                         return Text(
                           "${snapshot.data}",
                           style: TextStyle(
-                            letterSpacing: 0.5,
+                            letterSpacing: 0.2,
                             fontWeight: FontWeight.bold,
                           ),
                         );

@@ -12,7 +12,7 @@ class WANDgRPCConnection {
   ProviderReference _ref;
   ResponseStream _stream;
   bool _listening = false;
-  String _host = "192.168.0.103";
+  String _host = "192.168.158.29";
   int _port = 9999;
 
   WANDgRPCConnection(ref) {

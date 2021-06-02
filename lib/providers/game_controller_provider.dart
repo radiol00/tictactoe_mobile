@@ -33,7 +33,6 @@ class GameNotifier extends StateNotifier<AsyncValue<GameState>> {
     } else {
       // TODO: RETRIEVE GAME STATE !!!
       // gameState = GameState()..id = gameId;
-      // state = AsyncValue.data(gameState);
       refreshState();
     }
   }
@@ -68,27 +67,12 @@ class GameNotifier extends StateNotifier<AsyncValue<GameState>> {
       gameState = await prepareGameState(data);
       gameState.id = gameId;
 
-      // GAME STREAM!!!
-      _connection.getGameStream(gameId).listen((event) {
-        Map board = event.data()["board"];
-        String turn = event.data()["turn"];
-        for (var i = 0; i < 3; i++) {
-          for (var j = 0; j < 3; j++) {
-            Figure figure = Figure.BLANK;
-            int figureId = board["$i$j"];
-            if (figureId == 1) {
-              figure = Figure.X;
-            } else if (figureId == 2) {
-              figure = Figure.O;
-            }
-            gameState.board[i][j] = figure;
-          }
-        }
-        if (turn == _connection.auth.currentUser.uid) {
-          gameState.turn = Turn.PLAYER;
-        }
-        refreshState();
-      });
+      _connection.getGameStream(gameId).listen(
+        gameStreamHandler,
+        onError: (err) {
+          print("Game Stream error: $err");
+        },
+      );
 
       refreshState();
     } catch (e) {
@@ -97,6 +81,28 @@ class GameNotifier extends StateNotifier<AsyncValue<GameState>> {
       throw new FirebaseException(plugin: 'FireStore');
     }
     // ELSE
+  }
+
+  // GAME STREAM!!!
+  void gameStreamHandler(DocumentSnapshot<Map<String, dynamic>> doc) {
+    Map board = doc.data()["board"];
+    String turn = doc.data()["turn"];
+    for (var i = 0; i < 3; i++) {
+      for (var j = 0; j < 3; j++) {
+        Figure figure = Figure.BLANK;
+        int figureId = board["$i$j"];
+        if (figureId == 1) {
+          figure = Figure.X;
+        } else if (figureId == 2) {
+          figure = Figure.O;
+        }
+        gameState.board[i][j] = figure;
+      }
+    }
+    if (turn == _connection.auth.currentUser.uid) {
+      gameState.turn = Turn.PLAYER;
+    }
+    refreshState();
   }
 
   Future<GameState> prepareGameState(DocumentSnapshot gameDoc) async {
