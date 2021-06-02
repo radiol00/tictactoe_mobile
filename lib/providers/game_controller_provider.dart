@@ -2,6 +2,8 @@ import 'dart:async';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:wand_tictactoe/enums/enums.dart';
+import 'package:wand_tictactoe/models/game_result.dart';
 import 'package:wand_tictactoe/models/game_state.dart';
 import 'package:wand_tictactoe/models/player.dart';
 import 'package:wand_tictactoe/services/wand_firebase_connection.dart';
@@ -31,8 +33,7 @@ class GameNotifier extends StateNotifier<AsyncValue<GameState>> {
     if (gameId == "") {
       state = AsyncValue.data(null);
     } else {
-      // TODO: RETRIEVE GAME STATE !!!
-      // gameState = GameState()..id = gameId;
+      joinGame(gameId);
       refreshState();
     }
   }
@@ -57,8 +58,6 @@ class GameNotifier extends StateNotifier<AsyncValue<GameState>> {
   }
 
   Future<void> joinGame(String gameId) async {
-    // TRY TO JOIN GAME
-    // IF JOIN SUCCESSFUL
     try {
       DocumentReference gameDoc = _connection.getGameDoc(gameId);
       DocumentSnapshot data = await gameDoc.get();
@@ -80,11 +79,11 @@ class GameNotifier extends StateNotifier<AsyncValue<GameState>> {
       print(e);
       throw new FirebaseException(plugin: 'FireStore');
     }
-    // ELSE
   }
 
   // GAME STREAM!!!
   void gameStreamHandler(DocumentSnapshot<Map<String, dynamic>> doc) {
+    print("UPDATED GAME ${DateTime.now()}");
     Map board = doc.data()["board"];
     String turn = doc.data()["turn"];
     for (var i = 0; i < 3; i++) {
@@ -99,10 +98,20 @@ class GameNotifier extends StateNotifier<AsyncValue<GameState>> {
         gameState.board[i][j] = figure;
       }
     }
+
+    gameState.result = checkGameResult(gameState.board);
+
     if (turn == _connection.auth.currentUser.uid) {
       gameState.turn = Turn.PLAYER;
+    } else {
+      gameState.turn = Turn.ENEMY;
     }
+    // TODO: SET PLAYER AND ENEMY FIGURES!!!!!
     refreshState();
+  }
+
+  GameResult checkGameResult(List<List<Figure>> board) {
+    return null;
   }
 
   Future<GameState> prepareGameState(DocumentSnapshot gameDoc) async {
@@ -134,12 +143,6 @@ class GameNotifier extends StateNotifier<AsyncValue<GameState>> {
     // enemy.wins = 3;
     gs.enemyInfo = enemy;
 
-    // SET FIRST TURN
-    if (gameDoc["turn"] == playerUID) {
-      gs.setFirstTurn(Turn.PLAYER);
-    } else {
-      gs.setFirstTurn(Turn.ENEMY);
-    }
     return gs;
   }
 
