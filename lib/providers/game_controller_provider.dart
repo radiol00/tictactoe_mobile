@@ -177,8 +177,8 @@ class GameNotifier extends StateNotifier<AsyncValue<GameState>> {
       );
 
     bool isDraw = true;
-    for (var i = 0; i < 2; i++) {
-      for (var j = 0; j < 2; j++) {
+    for (var i = 0; i < 3; i++) {
+      for (var j = 0; j < 3; j++) {
         if (b[i][j] == Figure.BLANK) {
           isDraw = false;
         }
@@ -200,24 +200,20 @@ class GameNotifier extends StateNotifier<AsyncValue<GameState>> {
 
     // GET ENEMY UID
     if (gameUsers[0] == playerUID) {
+      print("BEFORE RANGE ERROR? ${gameUsers.length}");
       enemyUID = gameUsers[1];
+      print("OK");
     } else {
       enemyUID = gameUsers[0];
     }
 
     // GET ENEMY DOC + INFO
-    // TODO: UNCOMMENT CODE BELOW
     var enemyDoc = await _connection.getPlayerDoc(enemyUID);
     enemy.uid = enemyUID;
     enemy.displayName = enemyDoc["displayName"];
     enemy.draws = enemyDoc["draws"];
     enemy.loses = enemyDoc["loses"];
     enemy.wins = enemyDoc["wins"];
-    // enemy.uid = "asd";
-    // enemy.displayName = "ENEMY";
-    // enemy.draws = 1;
-    // enemy.loses = 2;
-    // enemy.wins = 3;
     gs.enemyInfo = enemy;
 
     return gs;

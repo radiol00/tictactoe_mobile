@@ -16,14 +16,22 @@ class GamePage extends StatefulWidget {
   _GamePageState createState() => _GamePageState();
 }
 
-class _GamePageState extends State<GamePage> {
+class _GamePageState extends State<GamePage>
+    with SingleTickerProviderStateMixin {
   String settingsHeroIconTag = "IN_GAME_SETTINGS";
   Future<void> Function(int, int) placeFigure;
   void Function() leaveGame;
   String playerName = "";
   Player enemyInfo;
   bool resultPopped = false;
+  bool figuresRevealed = false;
   int _quantityOfFigureVisages = 10;
+  bool showFigureIndicators = false;
+
+  AnimationController _rotationAnimationController;
+  Animation _rotationAnimation;
+
+  String revealedFigure = "?";
 
   @override
   void initState() {
@@ -37,18 +45,63 @@ class _GamePageState extends State<GamePage> {
         .displayName;
 
     enemyInfo = widget.gameState.enemyInfo;
+    double rotationRadians = 2 * 3.14 * 20;
+    _rotationAnimationController =
+        AnimationController(vsync: this, duration: Duration(seconds: 4));
+    _rotationAnimation = Tween<double>(begin: 0.0, end: rotationRadians)
+        .animate(CurvedAnimation(
+            parent: _rotationAnimationController, curve: Curves.easeInOutQuart))
+          ..addListener(() {
+            if (_rotationAnimation.value >= rotationRadians / 2 &&
+                revealedFigure == "?") {
+              if (widget.gameState.playerFigure == Figure.O) {
+                revealedFigure = "O";
+              } else {
+                revealedFigure = "X";
+              }
+            }
+            setState(() {});
+          })
+          ..addStatusListener((status) {
+            if (status == AnimationStatus.completed) {
+              Timer(
+                Duration(seconds: 1),
+                () {
+                  setState(() {
+                    figuresRevealed = true;
+                    showFigureIndicators = true;
+                  });
+                },
+              );
+            }
+          });
+
+    // Check if board is clear
+    for (var i = 0; i < 3; i++) {
+      for (var j = 0; j < 3; j++) {
+        if (widget.gameState.board[i][j] != Figure.BLANK) {
+          figuresRevealed = true;
+        }
+      }
+    }
+
+    if (!figuresRevealed) {
+      Timer(Duration(seconds: 1), () {
+        _rotationAnimationController.forward();
+      });
+    }
   }
 
   Widget _buildEnemyInfo() {
     Figure enemyFigure = widget.gameState.enemyFigure;
     Widget enemyFigureWidget = Text(
-      "O",
+      showFigureIndicators ? "O" : "",
       textScaleFactor: 1.3,
     );
 
     if (enemyFigure == Figure.X)
       enemyFigureWidget = Text(
-        "X",
+        showFigureIndicators ? "X" : "",
         textScaleFactor: 1.3,
       );
 
@@ -86,12 +139,15 @@ class _GamePageState extends State<GamePage> {
   Widget _buildPlayerInfo() {
     Figure playerFigure = widget.gameState.playerFigure;
     Widget playerFigureWidget = Text(
-      "O",
+      showFigureIndicators ? "O" : "",
       textScaleFactor: 1.3,
     );
 
     if (playerFigure == Figure.X)
-      playerFigureWidget = Text("X", textScaleFactor: 1.3);
+      playerFigureWidget = Text(
+        showFigureIndicators ? "X" : "",
+        textScaleFactor: 1.3,
+      );
 
     return Expanded(
       child: Column(
@@ -313,13 +369,46 @@ class _GamePageState extends State<GamePage> {
     );
   }
 
+  Widget _buildFigureRevealLayer() {
+    return Positioned.fill(
+      child: Container(
+        color: Colors.white,
+        child: Column(
+          children: [
+            Text(
+              "Your figure",
+              textScaleFactor: 2.5,
+            ),
+            SizedBox(
+              height: 10,
+            ),
+            Expanded(
+              child: Transform(
+                transform: Matrix4.rotationY(_rotationAnimation.value),
+                alignment: Alignment.center,
+                child: FittedBox(
+                  fit: BoxFit.fitHeight,
+                  child: Text(
+                    "$revealedFigure",
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   Widget _buildBoard() {
     return Column(
       children: [
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Text(widget.gameState.turn == Turn.ENEMY ? "ENEMY TURN" : ""),
+            Text(widget.gameState.turn == Turn.ENEMY && showFigureIndicators
+                ? "ENEMY TURN"
+                : ""),
           ],
         ),
         Padding(
@@ -330,13 +419,16 @@ class _GamePageState extends State<GamePage> {
             children: [
               _buildBoardGrid(),
               _buildGameResultLayer(),
+              if (!figuresRevealed) _buildFigureRevealLayer(),
             ],
           ),
         ),
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Text(widget.gameState.turn == Turn.PLAYER ? "YOUR TURN" : ""),
+            Text(widget.gameState.turn == Turn.PLAYER && showFigureIndicators
+                ? "YOUR TURN"
+                : ""),
           ],
         ),
       ],
