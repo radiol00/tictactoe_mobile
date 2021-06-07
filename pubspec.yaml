@@ -42,6 +42,7 @@ dependencies:
   flutter_keyboard_visibility: ^5.0.2
 
   device_preview: ^0.7.1
+  connectivity: ^3.0.6
 
 dev_dependencies:
   flutter_test:

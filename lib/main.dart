@@ -1,3 +1,4 @@
+import 'package:connectivity/connectivity.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_keyboard_visibility/flutter_keyboard_visibility.dart';
@@ -5,6 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:wand_tictactoe/models/ttt_user.dart';
 import 'package:wand_tictactoe/providers/firebase_auth_provider.dart';
 import 'package:wand_tictactoe/providers/game_controller_provider.dart';
+import 'package:wand_tictactoe/providers/internet_connectivity_provider.dart';
 import 'package:wand_tictactoe/providers/landing_page_visibility_provider.dart';
 import 'package:wand_tictactoe/views/auth_page.dart';
 import 'package:wand_tictactoe/views/game_page.dart';
@@ -143,6 +145,46 @@ class _MainState extends State<Main> {
     );
   }
 
+  Widget _watchConnectivityState(
+      T Function<T>(ProviderBase<Object, T>) watch, BuildContext context) {
+    return watch(internetConnectivityController).when(
+      data: (ConnectivityResult conn) {
+        if (conn == ConnectivityResult.none) {
+          return Center(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  "Tic-Tac-Toe Mobile",
+                  textScaleFactor: 3.0,
+                ),
+                Text(
+                  "No internet connection",
+                  textScaleFactor: 1.5,
+                ),
+              ],
+            ),
+          );
+        } else {
+          return _watchAuthState(watch, context);
+        }
+      },
+      loading: () {
+        return Center(
+          child: WANDProgressIndicator(
+            type: WANDProgressIndicatorType.fullscreen,
+            size: 100,
+          ),
+        );
+      },
+      error: (error, stackTrace) {
+        return Center(
+          child: Text("Error"),
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -203,10 +245,10 @@ class _MainState extends State<Main> {
                   );
                 },
                 duration: Duration(seconds: 1),
-                child: _watchAuthState(watch, context),
+                child: _watchConnectivityState(watch, context),
               );
             } else {
-              return _watchAuthState(watch, context);
+              return _watchConnectivityState(watch, context);
             }
           },
         ),
