@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:wand_tictactoe/enums/enums.dart';
-import 'package:wand_tictactoe/models/game_result.dart';
 import 'package:wand_tictactoe/models/game_state.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:wand_tictactoe/models/player.dart';

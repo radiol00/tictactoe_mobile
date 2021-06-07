@@ -113,7 +113,7 @@ class GameNotifier extends StateNotifier<AsyncValue<GameState>> {
 
   GameResult checkGameResult(List<List<Figure>> b) {
     // row 0
-    if (b[0][0] == b[0][1] && b[0][1] == b[0][2])
+    if (b[0][0] != Figure.BLANK && b[0][0] == b[0][1] && b[0][1] == b[0][2])
       return GameResult(
         start: Alignment.topLeft,
         end: Alignment.topRight,
@@ -121,7 +121,7 @@ class GameNotifier extends StateNotifier<AsyncValue<GameState>> {
       );
 
     // row 1
-    if (b[1][0] == b[1][1] && b[1][1] == b[1][2])
+    if (b[1][0] != Figure.BLANK && b[1][0] == b[1][1] && b[1][1] == b[1][2])
       return GameResult(
         start: Alignment.centerLeft,
         end: Alignment.centerRight,
@@ -129,7 +129,7 @@ class GameNotifier extends StateNotifier<AsyncValue<GameState>> {
       );
 
     // row 2
-    if (b[2][0] == b[2][1] && b[2][1] == b[2][2])
+    if (b[2][0] != Figure.BLANK && b[2][0] == b[2][1] && b[2][1] == b[2][2])
       return GameResult(
         start: Alignment.bottomLeft,
         end: Alignment.bottomRight,
@@ -137,7 +137,7 @@ class GameNotifier extends StateNotifier<AsyncValue<GameState>> {
       );
 
     // column 0
-    if (b[0][0] == b[1][0] && b[1][0] == b[2][0])
+    if (b[0][0] != Figure.BLANK && b[0][0] == b[1][0] && b[1][0] == b[2][0])
       return GameResult(
         start: Alignment.topLeft,
         end: Alignment.bottomLeft,
@@ -145,7 +145,7 @@ class GameNotifier extends StateNotifier<AsyncValue<GameState>> {
       );
 
     // column 1
-    if (b[0][1] == b[1][1] && b[1][1] == b[2][1])
+    if (b[0][1] != Figure.BLANK && b[0][1] == b[1][1] && b[1][1] == b[2][1])
       return GameResult(
         start: Alignment.topCenter,
         end: Alignment.bottomCenter,
@@ -153,7 +153,7 @@ class GameNotifier extends StateNotifier<AsyncValue<GameState>> {
       );
 
     // column 2
-    if (b[0][2] == b[1][2] && b[1][2] == b[2][2])
+    if (b[0][2] != Figure.BLANK && b[0][2] == b[1][2] && b[1][2] == b[2][2])
       return GameResult(
         start: Alignment.topRight,
         end: Alignment.bottomRight,
@@ -161,7 +161,7 @@ class GameNotifier extends StateNotifier<AsyncValue<GameState>> {
       );
 
     // diagonal 1
-    if (b[0][0] == b[1][1] && b[1][1] == b[2][2])
+    if (b[0][0] != Figure.BLANK && b[0][0] == b[1][1] && b[1][1] == b[2][2])
       return GameResult(
         start: Alignment.topLeft,
         end: Alignment.bottomRight,
@@ -169,7 +169,7 @@ class GameNotifier extends StateNotifier<AsyncValue<GameState>> {
       );
 
     // diagonal 2
-    if (b[2][0] == b[1][1] && b[1][1] == b[0][2])
+    if (b[2][0] != Figure.BLANK && b[2][0] == b[1][1] && b[1][1] == b[0][2])
       return GameResult(
         start: Alignment.bottomLeft,
         end: Alignment.topRight,
