@@ -45,27 +45,32 @@ class _GamePageState extends State<GamePage>
         .displayName;
 
     enemyInfo = widget.gameState.enemyInfo;
-    double rotationRadians = 2 * 3.14 * 20;
+    double rotationRadians = 2 * 3.14 * 5;
     _rotationAnimationController =
         AnimationController(vsync: this, duration: Duration(seconds: 4));
     _rotationAnimation = Tween<double>(begin: 0.0, end: rotationRadians)
         .animate(CurvedAnimation(
-            parent: _rotationAnimationController, curve: Curves.easeInOutQuart))
+            parent: _rotationAnimationController, curve: Curves.easeOutSine))
           ..addListener(() {
-            if (_rotationAnimation.value >= rotationRadians / 2 &&
-                revealedFigure == "?") {
-              if (widget.gameState.playerFigure == Figure.O) {
-                revealedFigure = "O";
-              } else {
+            if (_rotationAnimation.value >= rotationRadians / 2) {
+              if (_rotationAnimation.value.toDouble().round() % 2 == 0) {
                 revealedFigure = "X";
+              } else {
+                revealedFigure = "O";
               }
             }
             setState(() {});
           })
           ..addStatusListener((status) {
             if (status == AnimationStatus.completed) {
+              if (widget.gameState.playerFigure == Figure.O) {
+                revealedFigure = "O";
+              } else {
+                revealedFigure = "X";
+              }
+              setState(() {});
               Timer(
-                Duration(seconds: 1),
+                Duration(seconds: 2),
                 () {
                   setState(() {
                     figuresRevealed = true;

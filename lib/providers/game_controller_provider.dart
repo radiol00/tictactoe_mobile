@@ -216,6 +216,21 @@ class GameNotifier extends StateNotifier<AsyncValue<GameState>> {
     enemy.wins = enemyDoc["wins"];
     gs.enemyInfo = enemy;
 
+    // GET BOARD IN CASE OF ONGOING GAME
+    Map board = gameDoc["board"];
+    for (var i = 0; i < 3; i++) {
+      for (var j = 0; j < 3; j++) {
+        Figure figure = Figure.BLANK;
+        int figureId = board["$i$j"];
+        if (figureId == 1) {
+          figure = Figure.X;
+        } else if (figureId == 2) {
+          figure = Figure.O;
+        }
+        gs.board[i][j] = figure;
+      }
+    }
+
     return gs;
   }
 
