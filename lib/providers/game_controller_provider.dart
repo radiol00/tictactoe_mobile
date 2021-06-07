@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:wand_tictactoe/enums/enums.dart';
 import 'package:wand_tictactoe/models/game_result.dart';
@@ -110,7 +111,71 @@ class GameNotifier extends StateNotifier<AsyncValue<GameState>> {
     refreshState();
   }
 
-  GameResult checkGameResult(List<List<Figure>> board) {
+  GameResult checkGameResult(List<List<Figure>> b) {
+    // row 0
+    if (b[0][0] == b[0][1] && b[0][1] == b[0][2])
+      return GameResult(
+        start: Alignment.topLeft,
+        end: Alignment.topRight,
+        figure: b[0][0],
+      );
+
+    // row 1
+    if (b[1][0] == b[1][1] && b[1][1] == b[1][2])
+      return GameResult(
+        start: Alignment.centerLeft,
+        end: Alignment.centerRight,
+        figure: b[1][0],
+      );
+
+    // row 2
+    if (b[2][0] == b[2][1] && b[2][1] == b[2][2])
+      return GameResult(
+        start: Alignment.bottomLeft,
+        end: Alignment.bottomRight,
+        figure: b[2][0],
+      );
+
+    // column 0
+    if (b[0][0] == b[1][0] && b[1][0] == b[2][0])
+      return GameResult(
+        start: Alignment.topLeft,
+        end: Alignment.bottomLeft,
+        figure: b[0][0],
+      );
+
+    // column 1
+    if (b[0][1] == b[1][1] && b[1][1] == b[2][1])
+      return GameResult(
+        start: Alignment.topCenter,
+        end: Alignment.bottomCenter,
+        figure: b[0][1],
+      );
+
+    // column 2
+    if (b[0][2] == b[1][2] && b[1][2] == b[2][2])
+      return GameResult(
+        start: Alignment.topRight,
+        end: Alignment.bottomRight,
+        figure: b[0][2],
+      );
+
+    // diagonal 1
+    if (b[0][0] == b[1][1] && b[1][1] == b[2][2])
+      return GameResult(
+        start: Alignment.topLeft,
+        end: Alignment.bottomRight,
+        figure: b[0][0],
+      );
+
+    // diagonal 2
+    if (b[2][0] == b[1][1] && b[1][1] == b[0][2])
+      return GameResult(
+        start: Alignment.bottomLeft,
+        end: Alignment.topRight,
+        figure: b[2][0],
+      );
+
     return null;
   }
 
