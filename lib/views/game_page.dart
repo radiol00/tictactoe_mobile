@@ -230,24 +230,25 @@ class _GamePageState extends State<GamePage> {
       Figure figure = widget.gameState.board[x][y];
 
       Widget figureWidget = Container();
+      if (widget.gameState.id != null) {
+        if (figure == Figure.O) {
+          path += "/oes/";
+        } else if (figure == Figure.X) {
+          path += "/xes/";
+        }
 
-      if (figure == Figure.O) {
-        path += "/oes/";
-      } else if (figure == Figure.X) {
-        path += "/xes/";
-      }
+        if (figure == Figure.O || figure == Figure.X) {
+          int calculatedFigurePicID = widget.gameState.id.codeUnitAt(0) +
+              x * widget.gameState.id.codeUnitAt(1) +
+              y * widget.gameState.id.codeUnitAt(2) +
+              x +
+              y;
 
-      if (figure == Figure.O || figure == Figure.X) {
-        int calculatedFigurePicID = widget.gameState.id.codeUnitAt(0) +
-            x * widget.gameState.id.codeUnitAt(1) +
-            y * widget.gameState.id.codeUnitAt(2) +
-            x +
-            y;
+          path += "${calculatedFigurePicID % _quantityOfFigureVisages}";
 
-        path += "${calculatedFigurePicID % _quantityOfFigureVisages}";
-
-        path += ".png";
-        figureWidget = Image.asset(path);
+          path += ".png";
+          figureWidget = Image.asset(path);
+        }
       }
 
       return GestureDetector(

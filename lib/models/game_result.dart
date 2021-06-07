@@ -6,5 +6,7 @@ class GameResult {
   Alignment start;
   Alignment end;
   bool draw;
-  GameResult({this.start, this.end, this.figure});
+  GameResult({this.start, this.end, this.figure}) {
+    draw = false;
+  }
 }
