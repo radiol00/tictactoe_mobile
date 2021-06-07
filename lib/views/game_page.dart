@@ -72,10 +72,12 @@ class _GamePageState extends State<GamePage>
               Timer(
                 Duration(seconds: 2),
                 () {
-                  setState(() {
-                    figuresRevealed = true;
-                    showFigureIndicators = true;
-                  });
+                  if (mounted) {
+                    setState(() {
+                      figuresRevealed = true;
+                      showFigureIndicators = true;
+                    });
+                  }
                 },
               );
             }
@@ -91,9 +93,13 @@ class _GamePageState extends State<GamePage>
     }
 
     if (!figuresRevealed) {
-      Timer(Duration(seconds: 1), () {
-        _rotationAnimationController.forward();
-      });
+      if (mounted) {
+        Timer(Duration(seconds: 1), () {
+          _rotationAnimationController.forward();
+        });
+      }
+    } else {
+      showFigureIndicators = true;
     }
   }
 
@@ -357,14 +363,10 @@ class _GamePageState extends State<GamePage>
 
   Widget _buildGameResultLayer() {
     if (widget.gameState.result == null) return Container();
+    double padding = ((MediaQuery.of(context).size.width - 10) / 3) / 2;
     return Positioned.fill(
       child: Padding(
-        padding: const EdgeInsets.only(
-          left: 60,
-          right: 60,
-          bottom: 60,
-          top: 60,
-        ),
+        padding: EdgeInsets.all(padding),
         child: CustomPaint(
           painter: GameResultPainter(
             widget.gameState.result,
@@ -445,74 +447,78 @@ class _GamePageState extends State<GamePage>
     if (widget.gameState.result != null && !resultPopped) {
       resultPopped = true;
       Timer(Duration(seconds: 2), () {
-        Navigator.of(context).push(
-          PageRouteBuilder(
-            transitionsBuilder:
-                (context, animation, secondaryAnimation, child) {
-              return FadeTransition(
-                opacity: animation,
-                child: child,
-              );
-            },
-            barrierColor: Colors.black.withAlpha(50),
-            opaque: false,
-            pageBuilder: (context, animation, secondaryAnimation) {
-              return Scaffold(
-                backgroundColor: Colors.transparent,
-                body: Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: Center(
-                    child: Container(
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(15.0),
-                        color: Colors.white,
-                      ),
-                      child: Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Text(
-                              widget.gameState.result.draw
-                                  ? "DRAW"
-                                  : widget.gameState.result.figure ==
-                                          widget.gameState.playerFigure
-                                      ? "WIN"
-                                      : "LOSE",
-                              textScaleFactor: 2.0,
-                            ),
-                            SizedBox(
-                              height: 10.0,
-                            ),
-                            ElevatedButton(
-                              style: ButtonStyle(
-                                overlayColor: MaterialStateProperty.all<Color>(
-                                  Colors.white.withAlpha(200),
-                                ),
-                                foregroundColor:
-                                    MaterialStateProperty.resolveWith<Color>(
-                                        (states) {
-                                  return states.contains(MaterialState.pressed)
-                                      ? Colors.black
-                                      : Colors.white;
-                                }),
+        if (mounted) {
+          Navigator.of(context).push(
+            PageRouteBuilder(
+              transitionsBuilder:
+                  (context, animation, secondaryAnimation, child) {
+                return FadeTransition(
+                  opacity: animation,
+                  child: child,
+                );
+              },
+              barrierColor: Colors.black.withAlpha(50),
+              opaque: false,
+              pageBuilder: (context, animation, secondaryAnimation) {
+                return Scaffold(
+                  backgroundColor: Colors.transparent,
+                  body: Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: Center(
+                      child: Container(
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(15.0),
+                          color: Colors.white,
+                        ),
+                        child: Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Text(
+                                widget.gameState.result.draw
+                                    ? "DRAW"
+                                    : widget.gameState.result.figure ==
+                                            widget.gameState.playerFigure
+                                        ? "WIN"
+                                        : "LOSE",
+                                textScaleFactor: 2.0,
                               ),
-                              onPressed: () {
-                                Navigator.of(context).pop();
-                                leaveGame();
-                              },
-                              child: Text("OK"),
-                            ),
-                          ],
+                              SizedBox(
+                                height: 10.0,
+                              ),
+                              ElevatedButton(
+                                style: ButtonStyle(
+                                  overlayColor:
+                                      MaterialStateProperty.all<Color>(
+                                    Colors.white.withAlpha(200),
+                                  ),
+                                  foregroundColor:
+                                      MaterialStateProperty.resolveWith<Color>(
+                                          (states) {
+                                    return states
+                                            .contains(MaterialState.pressed)
+                                        ? Colors.black
+                                        : Colors.white;
+                                  }),
+                                ),
+                                onPressed: () {
+                                  Navigator.of(context).pop();
+                                  leaveGame();
+                                },
+                                child: Text("OK"),
+                              ),
+                            ],
+                          ),
                         ),
                       ),
                     ),
                   ),
-                ),
-              );
-            },
-          ),
-        );
+                );
+              },
+            ),
+          );
+        }
       });
     }
 
@@ -531,5 +537,11 @@ class _GamePageState extends State<GamePage>
         ),
       ),
     );
+  }
+
+  @override
+  void dispose() {
+    _rotationAnimationController.dispose();
+    super.dispose();
   }
 }
