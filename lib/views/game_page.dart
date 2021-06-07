@@ -1,10 +1,14 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:wand_tictactoe/enums/enums.dart';
+import 'package:wand_tictactoe/models/game_result.dart';
 import 'package:wand_tictactoe/models/game_state.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:wand_tictactoe/models/player.dart';
 import 'package:wand_tictactoe/providers/firebase_auth_provider.dart';
 import 'package:wand_tictactoe/providers/game_controller_provider.dart';
+import 'package:wand_tictactoe/widgets/game_result_painter.dart';
 
 class GamePage extends StatefulWidget {
   GamePage({this.gameState});
@@ -19,6 +23,7 @@ class _GamePageState extends State<GamePage> {
   void Function() leaveGame;
   String playerName = "";
   Player enemyInfo;
+  bool resultPopped = false;
 
   @override
   void initState() {
@@ -274,6 +279,25 @@ class _GamePageState extends State<GamePage> {
     );
   }
 
+  Widget _buildGameResultLayer() {
+    if (widget.gameState.result == null) return Container();
+    return Positioned.fill(
+      child: Padding(
+        padding: const EdgeInsets.only(
+          left: 60,
+          right: 60,
+          bottom: 60,
+          top: 60,
+        ),
+        child: CustomPaint(
+          painter: GameResultPainter(
+            widget.gameState.result,
+          ),
+        ),
+      ),
+    );
+  }
+
   Widget _buildBoard() {
     return Column(
       children: [
@@ -287,7 +311,12 @@ class _GamePageState extends State<GamePage> {
           padding: const EdgeInsets.symmetric(
             vertical: 30.0,
           ),
-          child: _buildBoardGrid(),
+          child: Stack(
+            children: [
+              _buildBoardGrid(),
+              _buildGameResultLayer(),
+            ],
+          ),
         ),
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -301,6 +330,78 @@ class _GamePageState extends State<GamePage> {
 
   @override
   Widget build(BuildContext context) {
+    if (widget.gameState.result != null && !resultPopped) {
+      resultPopped = true;
+      Timer(Duration(seconds: 2), () {
+        Navigator.of(context).push(
+          PageRouteBuilder(
+            transitionsBuilder:
+                (context, animation, secondaryAnimation, child) {
+              return FadeTransition(
+                opacity: animation,
+                child: child,
+              );
+            },
+            barrierColor: Colors.black.withAlpha(50),
+            opaque: false,
+            pageBuilder: (context, animation, secondaryAnimation) {
+              return Scaffold(
+                backgroundColor: Colors.transparent,
+                body: Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Center(
+                    child: Container(
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(15.0),
+                        color: Colors.white,
+                      ),
+                      child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Text(
+                              widget.gameState.result.figure ==
+                                      widget.gameState.playerFigure
+                                  ? "WIN"
+                                  : "LOSE",
+                              textScaleFactor: 2.0,
+                            ),
+                            SizedBox(
+                              height: 10.0,
+                            ),
+                            ElevatedButton(
+                              style: ButtonStyle(
+                                overlayColor: MaterialStateProperty.all<Color>(
+                                  Colors.white.withAlpha(200),
+                                ),
+                                foregroundColor:
+                                    MaterialStateProperty.resolveWith<Color>(
+                                        (states) {
+                                  return states.contains(MaterialState.pressed)
+                                      ? Colors.black
+                                      : Colors.white;
+                                }),
+                              ),
+                              onPressed: () {
+                                Navigator.of(context).pop();
+                                leaveGame();
+                              },
+                              child: Text("OK"),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              );
+            },
+          ),
+        );
+      });
+    }
+
     return Scaffold(
       backgroundColor: Colors.white,
       body: SafeArea(
