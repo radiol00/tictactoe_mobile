@@ -13,10 +13,12 @@ class GameResultPainter extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
-    final p1 = _result.start.alongSize(size);
-    final p2 = _result.end.alongSize(size);
+    if (_result != null && !_result.draw) {
+      final p1 = _result.start.alongSize(size);
+      final p2 = _result.end.alongSize(size);
 
-    canvas.drawLine(p1, p2, resultPaint);
+      canvas.drawLine(p1, p2, resultPaint);
+    }
   }
 
   @override

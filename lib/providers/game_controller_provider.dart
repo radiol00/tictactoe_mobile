@@ -176,6 +176,18 @@ class GameNotifier extends StateNotifier<AsyncValue<GameState>> {
         figure: b[2][0],
       );
 
+    bool isDraw = true;
+    for (var i = 0; i < 2; i++) {
+      for (var j = 0; j < 2; j++) {
+        if (b[i][j] == Figure.BLANK) {
+          isDraw = false;
+        }
+      }
+    }
+
+    if (isDraw)
+      return GameResult(start: null, end: null, figure: null)..draw = true;
+
     return null;
   }
 

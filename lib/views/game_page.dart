@@ -23,6 +23,7 @@ class _GamePageState extends State<GamePage> {
   String playerName = "";
   Player enemyInfo;
   bool resultPopped = false;
+  int _quantityOfFigureVisages = 10;
 
   @override
   void initState() {
@@ -225,14 +226,28 @@ class _GamePageState extends State<GamePage> {
 
   Widget _buildBoardGrid() {
     Widget _buildField(int x, int y) {
+      String path = "assets";
       Figure figure = widget.gameState.board[x][y];
 
       Widget figureWidget = Container();
 
       if (figure == Figure.O) {
-        figureWidget = Text("O");
+        path += "/oes/";
       } else if (figure == Figure.X) {
-        figureWidget = Text("X");
+        path += "/xes/";
+      }
+
+      if (figure == Figure.O || figure == Figure.X) {
+        int calculatedFigurePicID = widget.gameState.id.codeUnitAt(0) +
+            x * widget.gameState.id.codeUnitAt(1) +
+            y * widget.gameState.id.codeUnitAt(2) +
+            x +
+            y;
+
+        path += "${calculatedFigurePicID % _quantityOfFigureVisages}";
+
+        path += ".png";
+        figureWidget = Image.asset(path);
       }
 
       return GestureDetector(
@@ -360,10 +375,12 @@ class _GamePageState extends State<GamePage> {
                           mainAxisSize: MainAxisSize.min,
                           children: [
                             Text(
-                              widget.gameState.result.figure ==
-                                      widget.gameState.playerFigure
-                                  ? "WIN"
-                                  : "LOSE",
+                              widget.gameState.result.draw
+                                  ? "DRAW"
+                                  : widget.gameState.result.figure ==
+                                          widget.gameState.playerFigure
+                                      ? "WIN"
+                                      : "LOSE",
                               textScaleFactor: 2.0,
                             ),
                             SizedBox(
