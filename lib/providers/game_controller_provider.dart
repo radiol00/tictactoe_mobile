@@ -107,7 +107,15 @@ class GameNotifier extends StateNotifier<AsyncValue<GameState>> {
     } else {
       gameState.turn = Turn.ENEMY;
     }
-    // TODO: SET PLAYER AND ENEMY FIGURES!!!!!
+
+    if (doc.data()['y'] == _connection.auth.currentUser.uid) {
+      gameState.playerFigure = Figure.O;
+      gameState.enemyFigure = Figure.X;
+    } else {
+      gameState.playerFigure = Figure.X;
+      gameState.enemyFigure = Figure.O;
+    }
+
     refreshState();
   }
 

@@ -5,8 +5,10 @@ import 'package:wand_tictactoe/enums/enums.dart';
 import 'package:wand_tictactoe/models/game_state.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:wand_tictactoe/models/player.dart';
+import 'package:wand_tictactoe/proto/ttt_service.pb.dart';
 import 'package:wand_tictactoe/providers/firebase_auth_provider.dart';
 import 'package:wand_tictactoe/providers/game_controller_provider.dart';
+import 'package:wand_tictactoe/providers/grpc_provider.dart';
 import 'package:wand_tictactoe/widgets/game_result_painter.dart';
 
 class GamePage extends StatefulWidget {
@@ -21,6 +23,7 @@ class _GamePageState extends State<GamePage>
   String settingsHeroIconTag = "IN_GAME_SETTINGS";
   Future<void> Function(int, int) placeFigure;
   void Function() leaveGame;
+  Future<Status> Function(String) finalizeGame;
   String playerName = "";
   Player enemyInfo;
   bool resultPopped = false;
@@ -36,6 +39,7 @@ class _GamePageState extends State<GamePage>
   @override
   void initState() {
     super.initState();
+    finalizeGame = context.read(grpcProvider).finalizeGame;
     placeFigure = context.read(gameController.notifier).placeFigure;
     leaveGame = context.read(gameController.notifier).leaveGame;
     playerName = context
@@ -446,9 +450,11 @@ class _GamePageState extends State<GamePage>
   Widget build(BuildContext context) {
     if (widget.gameState.result != null && !resultPopped) {
       resultPopped = true;
-      Timer(Duration(seconds: 2), () {
+      Timer(Duration(seconds: 2), () async {
         if (mounted) {
-          Navigator.of(context).push(
+          Status status = await finalizeGame(widget.gameState.id);
+          int stat = status.stat;
+          await Navigator.of(context).push(
             PageRouteBuilder(
               transitionsBuilder:
                   (context, animation, secondaryAnimation, child) {
@@ -487,6 +493,12 @@ class _GamePageState extends State<GamePage>
                               SizedBox(
                                 height: 10.0,
                               ),
+                              Text(stat == 0 || stat == 1
+                                  ? 'Game succesfully finalized'
+                                  : 'Error in game finalization'),
+                              SizedBox(
+                                height: 10.0,
+                              ),
                               ElevatedButton(
                                 style: ButtonStyle(
                                   overlayColor:
@@ -518,6 +530,8 @@ class _GamePageState extends State<GamePage>
               },
             ),
           );
+
+          leaveGame();
         }
       });
     }

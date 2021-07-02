@@ -1,5 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:grpc/grpc.dart';
+import 'package:wand_tictactoe/proto/ttt_service.pb.dart';
 import 'package:wand_tictactoe/proto/ttt_service.pbgrpc.dart' as proto;
 import 'package:wand_tictactoe/providers/firebase_auth_provider.dart';
 
@@ -55,6 +56,18 @@ class WANDgRPCConnection {
     if (!_listening) return;
     _stream.cancel();
     _listening = false;
+  }
+
+  Future<proto.Status> finalizeGame(String gameId) async {
+    var tttuser = _ref.read(firebaseAuthController).data.value;
+    if (tttuser == null) return null;
+    Status status = await _client.finalizeGame(
+      FinalGame(
+        gameId: gameId,
+        uid: tttuser.firebaseUserObject.uid,
+      ),
+    );
+    return status;
   }
 
   bool get listening => _listening;

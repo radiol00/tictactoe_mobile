@@ -3,7 +3,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:wand_tictactoe/services/wand_firebase_connection.dart';
 import 'package:wand_tictactoe/widgets/wand_progress_indicator.dart';
 
-// TODO: Caching?
 class ProfilePage extends StatefulWidget {
   ProfilePage({this.userId});
   final String userId;
@@ -37,7 +36,7 @@ class _ProfilePageState extends State<ProfilePage> {
                     Navigator.of(context).pushReplacement(
                       MaterialPageRoute(
                         builder: (context) => ProfilePage(
-                          userId: h["enemyId"],
+                          userId: h["enemyID"],
                         ),
                       ),
                     );
@@ -64,7 +63,11 @@ class _ProfilePageState extends State<ProfilePage> {
                   padding: const EdgeInsets.all(16.0),
                   child: Column(
                     children: [
-                      Text("${h["result"]}"),
+                      Text(h['result'] == 1
+                          ? "Win"
+                          : h['result'] == 2
+                              ? "Lose"
+                              : "Draw"),
                     ],
                   ),
                 )
@@ -81,11 +84,6 @@ class _ProfilePageState extends State<ProfilePage> {
         ),
       );
     }
-
-    Iterable<Widget> copy = List.from(widgetList);
-    widgetList.addAll(copy);
-    widgetList.addAll(copy);
-    widgetList.addAll(copy);
 
     return widgetList.sublist(0, widgetList.length - 1);
   }

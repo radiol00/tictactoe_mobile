@@ -368,6 +368,7 @@ class _MainMenuPageState extends State<MainMenuPage>
         if (gameIDResponse.hasGameId()) {
           // Join game that's under gameid
           try {
+            print("JOINING: ${gameIDResponse.gameId.id}");
             await joinGame(gameIDResponse.gameId.id);
           } catch (e) {
             if (e is FirebaseException) {
